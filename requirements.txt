@@ -1,0 +1,27 @@
+# AI智能体开发依赖
+
+# 基础库
+numpy
+pandas
+scikit-learn
+
+# 自然语言处理
+transformers
+torch
+nltk
+spacy
+
+# 网络请求
+requests
+
+# 数据存储
+redis
+pymongo
+
+# 开发工具
+pytest
+flake8
+black
+
+# 环境管理
+python-dotenv
