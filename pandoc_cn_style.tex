@@ -1,0 +1,137 @@
+% Pandoc PDF style for Chinese survey reports
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\usepackage{indentfirst}
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{etoolbox}
+
+% ==================== 字体配置 ====================
+% 设置中文字体 - 使用跨平台兼容的字体配置
+% 优先使用系统自带字体，如果不存在则使用 Fandol 字体
+
+% 黑体（标题用）
+\IfFontExistsTF{SimHei}{
+  \setCJKmainfont{SimHei}
+  \newCJKfontfamily\fontheiti{SimHei}
+}{
+  \IfFontExistsTF{Heiti SC}{
+    \setCJKmainfont{Heiti SC}
+    \newCJKfontfamily\fontheiti{Heiti SC}
+  }{
+    \setCJKmainfont{FandolHei-Regular}
+    \newCJKfontfamily\fontheiti{FandolHei-Regular}
+  }
+}
+
+% 宋体（正文用）
+\IfFontExistsTF{SimSun}{
+  \newCJKfontfamily\fontsongti{SimSun}
+}{
+  \IfFontExistsTF{Songti SC}{
+    \newCJKfontfamily\fontsongti{Songti SC}
+  }{
+    \newCJKfontfamily\fontsongti{FandolSong-Regular}
+  }
+}
+
+% 楷体（强调用）
+\IfFontExistsTF{Kaiti}{
+  \newCJKfontfamily\fontkaiti{Kaiti}
+}{
+  \IfFontExistsTF{Kaiti SC}{
+    \newCJKfontfamily\fontkaiti{Kaiti SC}
+  }{
+    \IfFontExistsTF{FandolKai-Regular}{
+      \newCJKfontfamily\fontkaiti{FandolKai-Regular}
+    }{
+      \newCJKfontfamily\fontkaiti{SimSun}
+    }
+  }
+}
+
+% 仿宋（公文用）
+\IfFontExistsTF{FangSong}{
+  \newCJKfontfamily\fontfangsong{FangSong}
+}{
+  \IfFontExistsTF{STFangsong}{
+    \newCJKfontfamily\fontfangsong{STFangsong}
+  }{
+    \IfFontExistsTF{FandolFang-Regular}{
+      \newCJKfontfamily\fontfangsong{FandolFang-Regular}
+    }{
+      \newCJKfontfamily\fontfangsong{SimSun}
+    }
+  }
+}
+
+% 设置英文字体
+\setmainfont{Times New Roman}
+\setsansfont{Arial}
+\setmonofont{Courier New}
+
+% ==================== 页面设置 ====================
+% 正文：仿宋，三号（16pt），固定行距 28pt
+\AtBeginDocument{\fontfangsong\fontsize{16pt}{28pt}\selectfont}
+\setlength{\parindent}{2em}
+\setlength{\parskip}{0pt}
+
+% 不显示默认标题
+\AtBeginDocument{\let\maketitle\relax}
+
+% ==================== 表格设置 ====================
+% 表格：宋体，四号（14pt），单倍行距
+\AtBeginEnvironment{tabular}{\fontsongti\fontsize{14pt}{14pt}\selectfont\renewcommand{\arraystretch}{1}}
+\AtBeginEnvironment{longtable}{\fontsongti\fontsize{14pt}{14pt}\selectfont\renewcommand{\arraystretch}{1}}
+
+% ==================== 标题样式 ====================
+% #      -> 总标题：黑体，二号（22pt），居中
+% ##     -> 一级标题：黑体，三号（16pt）
+% ###    -> 二级标题：楷体，三号（16pt）
+% ####   -> 三级标题：仿宋加粗，三号（16pt）
+
+\titleformat{\section}
+  {\centering\fontheiti\fontsize{22pt}{28pt}\selectfont}
+  {\thesection}{0.8em}{}
+\titleformat{\subsection}
+  {\fontheiti\fontsize{20pt}{28pt}\selectfont}
+  {\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}
+  {\fontkaiti\fontsize{16pt}{28pt}\selectfont}
+  {\thesubsubsection}{0.6em}{}
+\titleformat{\paragraph}[hang]
+  {\fontfangsong\bfseries\fontsize{16pt}{28pt}\selectfont}
+  {\theparagraph}{0.6em}{}
+
+\titlespacing*{\section}{0pt}{12pt}{12pt}
+\titlespacing*{\subsection}{0pt}{10pt}{8pt}
+\titlespacing*{\subsubsection}{0pt}{8pt}{6pt}
+\titlespacing*{\paragraph}{0pt}{6pt}{4pt}
+
+% ==================== 页眉页脚 ====================
+% 仅显示页脚页码，无页眉线
+\pagestyle{plain}
+\raggedbottom
+\makeatletter
+\let\ps@plain\ps@empty
+\makeatother
+\usepackage{fancyhdr}
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyfoot[C]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+}
+
+% ==================== 图片设置 ====================
+\floatplacement{figure}{htbp}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.8}
+\setlength{\textfloatsep}{10pt plus 2pt minus 2pt}
+\setlength{\intextsep}{10pt plus 2pt minus 2pt}
+\setkeys{Gin}{width=0.9\linewidth,keepaspectratio}
+\captionsetup[figure]{font={small},justification=centering,singlelinecheck=false,skip=6pt}

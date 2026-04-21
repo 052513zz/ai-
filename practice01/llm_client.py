@@ -1,197 +1,244 @@
+"""
+Practice01: LLM 基础客户端
+使用 Python 标准 HTTP 库访问 OpenAI 兼容协议的 LLM API
+功能：读取 .env 配置、访问 LLM、统计 token 消耗和性能指标
+"""
+
 import os
 import json
+import time
 import urllib.request
 import urllib.error
-import time
 from pathlib import Path
 
-def load_env_file():
-    project_root = Path(__file__).parent.parent
-    env_file = project_root / '.env'
+
+def load_env_file(env_path=None):
+    """
+    读取 .env 文件，返回环境变量字典
+    
+    Args:
+        env_path: .env 文件路径，默认为项目根目录下的 .env 文件
+    
+    Returns:
+        dict: 环境变量键值对
+    """
+    if env_path is None:
+        # 获取项目根目录（当前文件的上级目录）
+        current_dir = Path(__file__).parent.parent
+        env_path = current_dir / '.env'
     
     env_vars = {}
-    try:
-        with open(env_file, 'r', encoding='utf-8') as f:
-            for line in f:
-                line = line.strip()
-                if line and not line.startswith('#') and '=' in line:
-                    key, value = line.split('=', 1)
-                    env_vars[key.strip()] = value.strip()
-    except FileNotFoundError:
-        print(f"错误：找不到环境变量文件 {env_file}")
-        print("请先复制env.example为.env并填写正确的参数")
-        return None
     
-    required_vars = ['LLM_BASE_URL', 'LLM_MODEL', 'LLM_API_KEY']
-    for var in required_vars:
-        if var not in env_vars or not env_vars[var]:
-            print(f"错误：缺少必要的环境变量 {var}")
-            return None
+    if not os.path.exists(env_path):
+        print(f"警告：找不到 .env 文件: {env_path}")
+        print("请复制 env.example 为 .env 并填写正确参数")
+        return env_vars
+    
+    with open(env_path, 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            # 跳过空行和注释
+            if not line or line.startswith('#'):
+                continue
+            # 解析键值对
+            if '=' in line:
+                key, value = line.split('=', 1)
+                env_vars[key.strip()] = value.strip()
     
     return env_vars
 
-def call_llm_api(env_vars, user_message):
-    base_url = env_vars['LLM_BASE_URL']
-    model = env_vars['LLM_MODEL']
-    api_key = env_vars['LLM_API_KEY']
+
+def call_llm_api(env_vars, messages, stream=False):
+    """
+    调用 LLM API
     
+    Args:
+        env_vars: 环境变量字典
+        messages: 消息列表，格式为 [{"role": "user", "content": "消息内容"}]
+        stream: 是否使用流式输出
+    
+    Returns:
+        dict: API 响应结果，包含内容和统计信息
+    """
+    base_url = env_vars.get('LLM_BASE_URL', 'http://127.0.0.1:1234/v1')
+    model = env_vars.get('LLM_MODEL', 'qwen3.5-4b')
+    api_key = env_vars.get('LLM_API_KEY', 'local')
+    timeout = int(env_vars.get('LLM_TIMEOUT', '3600'))
+    
+    # 构建 API URL
     url = f"{base_url}/chat/completions"
     
+    # 构建请求头
     headers = {
         'Content-Type': 'application/json',
         'Authorization': f'Bearer {api_key}'
     }
     
-    data = {
-        'model': model,
-        'messages': [
-            {
-                'role': 'user',
-                'content': user_message
-            }
-        ]
+    # 构建请求数据
+    request_data = {
+        "model": model,
+        "messages": messages,
+        "temperature": 0.7,
+        "max_tokens": 2048,
+        "stream": stream
     }
     
+    # 记录开始时间
     start_time = time.time()
     
     try:
+        # 创建请求
+        data = json.dumps(request_data).encode('utf-8')
         req = urllib.request.Request(
             url,
-            data=json.dumps(data).encode('utf-8'),
+            data=data,
             headers=headers,
             method='POST'
         )
         
-        with urllib.request.urlopen(req, timeout=30) as response:
+        # 发送请求
+        with urllib.request.urlopen(req, timeout=timeout) as response:
             response_data = response.read().decode('utf-8')
             result = json.loads(response_data)
-            
-            end_time = time.time()
-            response_time = end_time - start_time
-            
-            if 'choices' in result and len(result['choices']) > 0:
-                content = result['choices'][0]['message']['content']
-                
-                # 统计token消耗
-                prompt_tokens = result.get('usage', {}).get('prompt_tokens', 0)
-                completion_tokens = result.get('usage', {}).get('completion_tokens', 0)
-                total_tokens = result.get('usage', {}).get('total_tokens', 0)
-                
-                # 计算token/s速度
-                if response_time > 0:
-                    tokens_per_second = total_tokens / response_time
-                else:
-                    tokens_per_second = 0
-                
-                return {
-                    'content': content,
-                    'prompt_tokens': prompt_tokens,
-                    'completion_tokens': completion_tokens,
-                    'total_tokens': total_tokens,
-                    'response_time': response_time,
-                    'tokens_per_second': tokens_per_second
-                }
-            else:
-                end_time = time.time()
-                response_time = end_time - start_time
-                return {
-                    'content': "错误：API返回的数据格式不正确",
-                    'prompt_tokens': 0,
-                    'completion_tokens': 0,
-                    'total_tokens': 0,
-                    'response_time': response_time,
-                    'tokens_per_second': 0
-                }
-                
+        
+        # 计算耗时
+        elapsed_time = time.time() - start_time
+        
+        # 提取响应内容
+        if 'choices' in result and len(result['choices']) > 0:
+            content = result['choices'][0].get('message', {}).get('content', '')
+        else:
+            content = ''
+        
+        # 提取 token 统计
+        usage = result.get('usage', {})
+        prompt_tokens = usage.get('prompt_tokens', 0)
+        completion_tokens = usage.get('completion_tokens', 0)
+        total_tokens = usage.get('total_tokens', prompt_tokens + completion_tokens)
+        
+        # 计算 token/s 速度
+        tokens_per_second = completion_tokens / elapsed_time if elapsed_time > 0 else 0
+        
+        return {
+            'success': True,
+            'content': content,
+            'prompt_tokens': prompt_tokens,
+            'completion_tokens': completion_tokens,
+            'total_tokens': total_tokens,
+            'elapsed_time': elapsed_time,
+            'tokens_per_second': tokens_per_second,
+            'model': result.get('model', model)
+        }
+    
     except urllib.error.HTTPError as e:
-        end_time = time.time()
-        response_time = end_time - start_time
-        error_msg = f"HTTP错误 {e.code}: {e.reason}"
-        try:
-            error_data = json.loads(e.read().decode('utf-8'))
-            if 'error' in error_data:
-                error_msg += f" - {error_data['error']}"
-        except:
-            pass
+        elapsed_time = time.time() - start_time
+        error_body = e.read().decode('utf-8') if e.read() else str(e)
         return {
-            'content': error_msg,
+            'success': False,
+            'error': f'HTTP 错误 {e.code}: {e.reason}',
+            'error_details': error_body,
+            'elapsed_time': elapsed_time,
             'prompt_tokens': 0,
             'completion_tokens': 0,
             'total_tokens': 0,
-            'response_time': response_time,
             'tokens_per_second': 0
         }
+    
     except urllib.error.URLError as e:
-        end_time = time.time()
-        response_time = end_time - start_time
+        elapsed_time = time.time() - start_time
         return {
-            'content': f"URL错误：{e.reason}",
+            'success': False,
+            'error': f'URL 错误: {e.reason}',
+            'elapsed_time': elapsed_time,
             'prompt_tokens': 0,
             'completion_tokens': 0,
             'total_tokens': 0,
-            'response_time': response_time,
             'tokens_per_second': 0
         }
-    except json.JSONDecodeError:
-        end_time = time.time()
-        response_time = end_time - start_time
-        return {
-            'content': "错误：无法解析API返回的JSON数据",
-            'prompt_tokens': 0,
-            'completion_tokens': 0,
-            'total_tokens': 0,
-            'response_time': response_time,
-            'tokens_per_second': 0
-        }
+    
     except Exception as e:
-        end_time = time.time()
-        response_time = end_time - start_time
+        elapsed_time = time.time() - start_time
         return {
-            'content': f"未知错误：{str(e)}",
+            'success': False,
+            'error': f'未知错误: {str(e)}',
+            'elapsed_time': elapsed_time,
             'prompt_tokens': 0,
             'completion_tokens': 0,
             'total_tokens': 0,
-            'response_time': response_time,
             'tokens_per_second': 0
         }
 
+
+def print_result(result):
+    """
+    打印 API 调用结果和统计信息
+    
+    Args:
+        result: call_llm_api 返回的结果字典
+    """
+    print("\n" + "=" * 60)
+    
+    if result['success']:
+        print("✅ LLM 响应成功")
+        print("\n响应内容:")
+        print("-" * 60)
+        print(result['content'])
+    else:
+        print("❌ LLM 调用失败")
+        print(f"\n错误信息: {result['error']}")
+        if 'error_details' in result:
+            print(f"错误详情: {result['error_details']}")
+    
+    print("\n" + "-" * 60)
+    print("📊 性能统计:")
+    print(f"  总 Token 数: {result['total_tokens']}")
+    print(f"  输入 Token: {result['prompt_tokens']}")
+    print(f"  输出 Token: {result['completion_tokens']}")
+    print(f"  响应时间: {result['elapsed_time']:.2f} 秒")
+    print(f"  Token 处理速度: {result['tokens_per_second']:.2f} tokens/秒")
+    print("=" * 60 + "\n")
+
+
 def main():
-    print("LLM客户端 - 读取环境变量并调用API")
-    print("=" * 50)
+    """
+    主函数：演示如何使用 LLM 客户端
+    """
+    print("🚀 Practice01: LLM 基础客户端")
+    print("=" * 60)
     
+    # 1. 加载环境变量
+    print("\n📂 正在加载环境变量...")
     env_vars = load_env_file()
+    
     if not env_vars:
+        print("❌ 无法加载环境变量，请检查 .env 文件")
         return
     
-    print(f"配置信息：")
-    print(f"  Base URL: {env_vars['LLM_BASE_URL']}")
-    print(f"  Model: {env_vars['LLM_MODEL']}")
-    print(f"  API Key: {env_vars['LLM_API_KEY'][:10]}...")
-    print()
+    print(f"✅ 已加载配置:")
+    print(f"   Base URL: {env_vars.get('LLM_BASE_URL', '未设置')}")
+    print(f"   Model: {env_vars.get('LLM_MODEL', '未设置')}")
+    print(f"   Timeout: {env_vars.get('LLM_TIMEOUT', '3600')} 秒")
     
-    user_message = input("请输入要发送给LLM的消息（或输入'quit'退出）：")
+    # 2. 准备消息
+    print("\n💬 请输入您的问题（直接回车使用默认问题）:")
+    user_input = input("> ").strip()
     
-    if user_message.lower() == 'quit':
-        print("退出程序")
-        return
+    if not user_input:
+        user_input = "你好，请介绍一下你自己。"
+        print(f"使用默认问题: {user_input}")
     
-    print("\n正在发送请求...")
-    result = call_llm_api(env_vars, user_message)
+    messages = [
+        {"role": "system", "content": "你是一个乐于助人的助手。"},
+        {"role": "user", "content": user_input}
+    ]
     
-    print("\nLLM响应：")
-    print("-" * 50)
-    print(result['content'])
-    print("-" * 50)
+    # 3. 调用 LLM API
+    print("\n🤖 正在调用 LLM API...")
+    result = call_llm_api(env_vars, messages)
     
-    # 显示统计信息
-    print("\n统计信息：")
-    print("-" * 50)
-    print(f"  输入Token数：{result['prompt_tokens']}")
-    print(f"  输出Token数：{result['completion_tokens']}")
-    print(f"  总Token数：{result['total_tokens']}")
-    print(f"  响应时间：{result['response_time']:.2f}秒")
-    print(f"  Token处理速度：{result['tokens_per_second']:.2f} tokens/秒")
-    print("-" * 50)
+    # 4. 打印结果
+    print_result(result)
+
 
 if __name__ == "__main__":
     main()
