@@ -41,3 +41,28 @@ env/
 # 操作系统
 .DS_Store
 Thumbs.db
+
+# LaTeX
+*.aux
+*.out
+*.pdf
+*.log
+tex2pdf.*/
+
+# 数据库
+*.db
+
+# 图片
+*.png
+*.jpg
+*.jpeg
+
+# 可执行文件
+*.exe
+*.dll
+
+# Graphviz工具包（大型二进制文件）
+Graphviz/
+
+# 日志文件目录
+results/

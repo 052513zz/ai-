@@ -10,7 +10,7 @@
 
 % ==================== 字体配置 ====================
 % 设置中文字体 - 使用跨平台兼容的字体配置
-% 优先使用系统自带字体，如果不存在则使用 Fandol 字体
+% 优先使用系统自带字体，如果不存在则使用备用字体
 
 % 黑体（标题用）
 \IfFontExistsTF{SimHei}{
@@ -21,8 +21,23 @@
     \setCJKmainfont{Heiti SC}
     \newCJKfontfamily\fontheiti{Heiti SC}
   }{
-    \setCJKmainfont{FandolHei-Regular}
-    \newCJKfontfamily\fontheiti{FandolHei-Regular}
+    \IfFontExistsTF{Heiti TC}{
+      \setCJKmainfont{Heiti TC}
+      \newCJKfontfamily\fontheiti{Heiti TC}
+    }{
+      \IfFontExistsTF{WenQuanYi Micro Hei}{
+        \setCJKmainfont{WenQuanYi Micro Hei}
+        \newCJKfontfamily\fontheiti{WenQuanYi Micro Hei}
+      }{
+        \IfFontExistsTF{FandolHei-Regular}{
+          \setCJKmainfont{FandolHei-Regular}
+          \newCJKfontfamily\fontheiti{FandolHei-Regular}
+        }{
+          \setCJKmainfont{Arial Unicode MS}
+          \newCJKfontfamily\fontheiti{Arial Unicode MS}
+        }
+      }
+    }
   }
 }
 
@@ -33,7 +48,19 @@
   \IfFontExistsTF{Songti SC}{
     \newCJKfontfamily\fontsongti{Songti SC}
   }{
-    \newCJKfontfamily\fontsongti{FandolSong-Regular}
+    \IfFontExistsTF{Songti TC}{
+      \newCJKfontfamily\fontsongti{Songti TC}
+    }{
+      \IfFontExistsTF{WenQuanYi Micro Hei Mono}{
+        \newCJKfontfamily\fontsongti{WenQuanYi Micro Hei Mono}
+      }{
+        \IfFontExistsTF{FandolSong-Regular}{
+          \newCJKfontfamily\fontsongti{FandolSong-Regular}
+        }{
+          \newCJKfontfamily\fontsongti{Arial Unicode MS}
+        }
+      }
+    }
   }
 }
 
@@ -44,10 +71,18 @@
   \IfFontExistsTF{Kaiti SC}{
     \newCJKfontfamily\fontkaiti{Kaiti SC}
   }{
-    \IfFontExistsTF{FandolKai-Regular}{
-      \newCJKfontfamily\fontkaiti{FandolKai-Regular}
+    \IfFontExistsTF{Kaiti TC}{
+      \newCJKfontfamily\fontkaiti{Kaiti TC}
     }{
-      \newCJKfontfamily\fontkaiti{SimSun}
+      \IfFontExistsTF{FandolKai-Regular}{
+        \newCJKfontfamily\fontkaiti{FandolKai-Regular}
+      }{
+        \IfFontExistsTF{WenQuanYi Micro Hei}{
+          \newCJKfontfamily\fontkaiti{WenQuanYi Micro Hei}
+        }{
+          \newCJKfontfamily\fontkaiti{SimSun}
+        }
+      }
     }
   }
 }
@@ -62,15 +97,45 @@
     \IfFontExistsTF{FandolFang-Regular}{
       \newCJKfontfamily\fontfangsong{FandolFang-Regular}
     }{
-      \newCJKfontfamily\fontfangsong{SimSun}
+      \IfFontExistsTF{WenQuanYi Micro Hei Mono}{
+        \newCJKfontfamily\fontfangsong{WenQuanYi Micro Hei Mono}
+      }{
+        \newCJKfontfamily\fontfangsong{SimSun}
+      }
     }
   }
 }
 
-% 设置英文字体
-\setmainfont{Times New Roman}
-\setsansfont{Arial}
-\setmonofont{Courier New}
+% 设置英文字体 - 增加更多备选字体
+\IfFontExistsTF{Times New Roman}{
+  \setmainfont{Times New Roman}
+}{
+  \IfFontExistsTF{Times}{
+    \setmainfont{Times}
+  }{
+    \setmainfont{DejaVu Serif}
+  }
+}
+
+\IfFontExistsTF{Arial}{
+  \setsansfont{Arial}
+}{
+  \IfFontExistsTF{Helvetica}{
+    \setsansfont{Helvetica}
+  }{
+    \setsansfont{DejaVu Sans}
+  }
+}
+
+\IfFontExistsTF{Courier New}{
+  \setmonofont{Courier New}
+}{
+  \IfFontExistsTF{Courier}{
+    \setmonofont{Courier}
+  }{
+    \setmonofont{DejaVu Sans Mono}
+  }
+}
 
 % ==================== 页面设置 ====================
 % 正文：仿宋，三号（16pt），固定行距 28pt

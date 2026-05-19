@@ -1,0 +1,1171 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\PassOptionsToPackage{hyphens}{url} % url is loaded by hyperref
+\usepackage[unicode=true]{hyperref}
+\hypersetup{
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage[margin=2.54cm,a4paper]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\newenvironment{Shaded}{}{}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{#1}}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{#1}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{#1}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+% Pandoc PDF style for Chinese survey reports
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\usepackage{indentfirst}
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{etoolbox}
+
+% ==================== 字体配置 ====================
+% 设置中文字体 - 使用跨平台兼容的字体配置
+% 优先使用系统自带字体，如果不存在则使用备用字体
+
+% 黑体（标题用）
+\IfFontExistsTF{SimHei}{
+  \setCJKmainfont{SimHei}
+  \newCJKfontfamily\fontheiti{SimHei}
+}{
+  \IfFontExistsTF{Heiti SC}{
+    \setCJKmainfont{Heiti SC}
+    \newCJKfontfamily\fontheiti{Heiti SC}
+  }{
+    \IfFontExistsTF{Heiti TC}{
+      \setCJKmainfont{Heiti TC}
+      \newCJKfontfamily\fontheiti{Heiti TC}
+    }{
+      \IfFontExistsTF{WenQuanYi Micro Hei}{
+        \setCJKmainfont{WenQuanYi Micro Hei}
+        \newCJKfontfamily\fontheiti{WenQuanYi Micro Hei}
+      }{
+        \IfFontExistsTF{FandolHei-Regular}{
+          \setCJKmainfont{FandolHei-Regular}
+          \newCJKfontfamily\fontheiti{FandolHei-Regular}
+        }{
+          \setCJKmainfont{Arial Unicode MS}
+          \newCJKfontfamily\fontheiti{Arial Unicode MS}
+        }
+      }
+    }
+  }
+}
+
+% 宋体（正文用）
+\IfFontExistsTF{SimSun}{
+  \newCJKfontfamily\fontsongti{SimSun}
+}{
+  \IfFontExistsTF{Songti SC}{
+    \newCJKfontfamily\fontsongti{Songti SC}
+  }{
+    \IfFontExistsTF{Songti TC}{
+      \newCJKfontfamily\fontsongti{Songti TC}
+    }{
+      \IfFontExistsTF{WenQuanYi Micro Hei Mono}{
+        \newCJKfontfamily\fontsongti{WenQuanYi Micro Hei Mono}
+      }{
+        \IfFontExistsTF{FandolSong-Regular}{
+          \newCJKfontfamily\fontsongti{FandolSong-Regular}
+        }{
+          \newCJKfontfamily\fontsongti{Arial Unicode MS}
+        }
+      }
+    }
+  }
+}
+
+% 楷体（强调用）
+\IfFontExistsTF{Kaiti}{
+  \newCJKfontfamily\fontkaiti{Kaiti}
+}{
+  \IfFontExistsTF{Kaiti SC}{
+    \newCJKfontfamily\fontkaiti{Kaiti SC}
+  }{
+    \IfFontExistsTF{Kaiti TC}{
+      \newCJKfontfamily\fontkaiti{Kaiti TC}
+    }{
+      \IfFontExistsTF{FandolKai-Regular}{
+        \newCJKfontfamily\fontkaiti{FandolKai-Regular}
+      }{
+        \IfFontExistsTF{WenQuanYi Micro Hei}{
+          \newCJKfontfamily\fontkaiti{WenQuanYi Micro Hei}
+        }{
+          \newCJKfontfamily\fontkaiti{SimSun}
+        }
+      }
+    }
+  }
+}
+
+% 仿宋（公文用）
+\IfFontExistsTF{FangSong}{
+  \newCJKfontfamily\fontfangsong{FangSong}
+}{
+  \IfFontExistsTF{STFangsong}{
+    \newCJKfontfamily\fontfangsong{STFangsong}
+  }{
+    \IfFontExistsTF{FandolFang-Regular}{
+      \newCJKfontfamily\fontfangsong{FandolFang-Regular}
+    }{
+      \IfFontExistsTF{WenQuanYi Micro Hei Mono}{
+        \newCJKfontfamily\fontfangsong{WenQuanYi Micro Hei Mono}
+      }{
+        \newCJKfontfamily\fontfangsong{SimSun}
+      }
+    }
+  }
+}
+
+% 设置英文字体 - 增加更多备选字体
+\IfFontExistsTF{Times New Roman}{
+  \setmainfont{Times New Roman}
+}{
+  \IfFontExistsTF{Times}{
+    \setmainfont{Times}
+  }{
+    \setmainfont{DejaVu Serif}
+  }
+}
+
+\IfFontExistsTF{Arial}{
+  \setsansfont{Arial}
+}{
+  \IfFontExistsTF{Helvetica}{
+    \setsansfont{Helvetica}
+  }{
+    \setsansfont{DejaVu Sans}
+  }
+}
+
+\IfFontExistsTF{Courier New}{
+  \setmonofont{Courier New}
+}{
+  \IfFontExistsTF{Courier}{
+    \setmonofont{Courier}
+  }{
+    \setmonofont{DejaVu Sans Mono}
+  }
+}
+
+% ==================== 页面设置 ====================
+% 正文：仿宋，三号（16pt），固定行距 28pt
+\AtBeginDocument{\fontfangsong\fontsize{16pt}{28pt}\selectfont}
+\setlength{\parindent}{2em}
+\setlength{\parskip}{0pt}
+
+% 不显示默认标题
+\AtBeginDocument{\let\maketitle\relax}
+
+% ==================== 表格设置 ====================
+% 表格：宋体，四号（14pt），单倍行距
+\AtBeginEnvironment{tabular}{\fontsongti\fontsize{14pt}{14pt}\selectfont\renewcommand{\arraystretch}{1}}
+\AtBeginEnvironment{longtable}{\fontsongti\fontsize{14pt}{14pt}\selectfont\renewcommand{\arraystretch}{1}}
+
+% ==================== 标题样式 ====================
+% #      -> 总标题：黑体，二号（22pt），居中
+% ##     -> 一级标题：黑体，三号（16pt）
+% ###    -> 二级标题：楷体，三号（16pt）
+% ####   -> 三级标题：仿宋加粗，三号（16pt）
+
+\titleformat{\section}
+  {\centering\fontheiti\fontsize{22pt}{28pt}\selectfont}
+  {\thesection}{0.8em}{}
+\titleformat{\subsection}
+  {\fontheiti\fontsize{20pt}{28pt}\selectfont}
+  {\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}
+  {\fontkaiti\fontsize{16pt}{28pt}\selectfont}
+  {\thesubsubsection}{0.6em}{}
+\titleformat{\paragraph}[hang]
+  {\fontfangsong\bfseries\fontsize{16pt}{28pt}\selectfont}
+  {\theparagraph}{0.6em}{}
+
+\titlespacing*{\section}{0pt}{12pt}{12pt}
+\titlespacing*{\subsection}{0pt}{10pt}{8pt}
+\titlespacing*{\subsubsection}{0pt}{8pt}{6pt}
+\titlespacing*{\paragraph}{0pt}{6pt}{4pt}
+
+% ==================== 页眉页脚 ====================
+% 仅显示页脚页码，无页眉线
+\pagestyle{plain}
+\raggedbottom
+\makeatletter
+\let\ps@plain\ps@empty
+\makeatother
+\usepackage{fancyhdr}
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyfoot[C]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+}
+
+% ==================== 图片设置 ====================
+\floatplacement{figure}{htbp}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.8}
+\setlength{\textfloatsep}{10pt plus 2pt minus 2pt}
+\setlength{\intextsep}{10pt plus 2pt minus 2pt}
+\setkeys{Gin}{width=0.9\linewidth,keepaspectratio}
+\captionsetup[figure]{font={small},justification=centering,singlelinecheck=false,skip=6pt}
+
+\date{}
+
+\begin{document}
+
+\section{Python AI
+智能体开发学习项目}\label{python-ai-ux667aux80fdux4f53ux5f00ux53d1ux5b66ux4e60ux9879ux76ee}
+
+\subsection{项目简介}\label{ux9879ux76eeux7b80ux4ecb}
+
+这是一个基于 Python 的 AI 智能体开发学习项目，旨在帮助学习者了解如何使用
+Python 标准库与 OpenAI 兼容协议的 LLM（大语言模型）进行交互。
+
+\subsection{目录结构}\label{ux76eeux5f55ux7ed3ux6784}
+
+\begin{verbatim}
+trae111/
+├── venv/                    # 虚拟环境
+├── practice01/              # 练习1：LLM 基础访问
+│   ├── __init__.py
+│   └── llm_client.py
+├── practice02/              # 练习2：工具调用
+│   ├── __init__.py
+│   ├── file_tools.py
+│   └── llm_toolcall.py
+├── practice03/              # 练习3：流式输出聊天
+│   ├── __init__.py
+│   └── llm_chat.py
+├── practice04/              # 练习4：聊天记录总结 + 关键信息提取 + 聊天历史搜索
+│   ├── __init__.py
+│   ├── llm_chat_summary.py
+│   └── llm_chat_analyzer.py
+├── practice05/              # 练习5：聊天记录总结 + 关键信息提取 + 聊天历史搜索 + AnythingLLM 查询
+│   ├── __init__.py
+│   └── llm_chat_analyzer.py
+├── .env                     # 环境变量文件（用户创建）
+├── .env.example             # 环境变量模板
+├── .gitignore               # Git 忽略文件
+├── requirements.txt         # 项目依赖
+└── README.md                # 项目说明文档
+\end{verbatim}
+
+\subsection{环境配置}\label{ux73afux5883ux914dux7f6e}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{虚拟环境已创建}： \texttt{bash\ \ \ \ python\ -m\ venv\ venv}
+\item
+  \textbf{激活虚拟环境}：
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  Windows PowerShell:
+  \texttt{.\textbackslash{}venv\textbackslash{}Scripts\textbackslash{}Activate.ps1}
+\item
+  Windows CMD:
+  \texttt{venv\textbackslash{}Scripts\textbackslash{}activate.bat}
+\item
+  Linux/Mac: \texttt{source\ venv/bin/activate}
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\item
+  \textbf{安装依赖}：
+  \texttt{bash\ \ \ \ pip\ install\ -r\ requirements.txt}
+\item
+  \textbf{配置环境变量}：
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  复制 \texttt{env.example} 为 \texttt{.env} 文件
+\item
+  填写正确的 LLM 配置信息：
+  \texttt{LLM\_BASE\_URL=http://127.0.0.1:1234/v1\ \ LLM\_MODEL=qwen3.5-4b\ \ LLM\_API\_KEY=your\_api\_key\_here\ \ LLM\_TIMEOUT=3600}
+\end{itemize}
+
+\subsection{练习模块说明}\label{ux7ec3ux4e60ux6a21ux5757ux8bf4ux660e}
+
+\subsubsection{Practice01: LLM
+基础客户端}\label{practice01-llm-ux57faux7840ux5ba2ux6237ux7aef}
+
+\textbf{文件位置}: \texttt{practice01/llm\_client.py}
+
+\textbf{功能说明}: - 读取项目根目录的 \texttt{.env} 文件加载配置 - 使用
+Python 标准 HTTP 库（urllib）访问 LLM API - 支持 OpenAI
+兼容协议的聊天接口 - 统计 token 消耗、响应时间和处理速度
+
+\textbf{运行方法}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{python}\NormalTok{ practice01/llm_client.py}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{核心功能}: 1. \textbf{环境变量加载} (\texttt{load\_env\_file}):
+解析 \texttt{.env} 文件，提取 LLM 配置 2. \textbf{API 调用}
+(\texttt{call\_llm\_api}): 发送 HTTP POST 请求到 LLM 服务 3.
+\textbf{性能统计}: 自动计算 token 数量、响应时间、tokens/秒 4.
+\textbf{错误处理}: 捕获 HTTP 错误、URL 错误等异常情况
+
+\textbf{输出示例}:
+
+\begin{verbatim}
+============================================================
+✅ LLM 响应成功
+
+响应内容:
+------------------------------------------------------------
+你好！我是一个 AI 助手，很高兴为你服务。
+
+------------------------------------------------------------
+📊 性能统计:
+  总 Token 数: 25
+  输入 Token: 15
+  输出 Token: 10
+  响应时间: 2.35 秒
+  Token 处理速度: 4.26 tokens/秒
+============================================================
+\end{verbatim}
+
+\textbf{教学目标}: 1. 学习如何使用 Python 标准库进行 HTTP 请求 2. 了解
+OpenAI 兼容 API 的请求/响应格式 3. 掌握环境变量的管理和使用 4.
+学习基本的性能统计和错误处理
+
+\subsubsection{Practice02:
+工具调用客户端}\label{practice02-ux5de5ux5177ux8c03ux7528ux5ba2ux6237ux7aef}
+
+\textbf{文件位置}: \texttt{practice02/}
+
+\textbf{功能说明}: - 实现 6 个工具：5 个文件操作工具 + 1 个网络访问工具
+- 将工具定义作为系统提示词发送给 LLM - LLM
+可以根据用户需求调用相应的工具 - 支持工具调用解析和执行
+
+\textbf{运行方法}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{python}\NormalTok{ practice02/llm_toolcall.py}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{核心功能}: 1. \textbf{文件操作工具} (\texttt{file\_tools.py}): -
+\texttt{list\_files}: 列出目录下的所有文件（包括属性和大小） -
+\texttt{rename\_file}: 重命名文件 - \texttt{delete\_file}: 删除文件 -
+\texttt{create\_file}: 创建新文件并写入内容 - \texttt{read\_file}:
+读取文件内容
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  \textbf{网络访问工具} (\texttt{file\_tools.py}):
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{curl\_web}: 通过 curl 访问网页并返回网页内容
+\item
+  支持 HTTP 和 HTTPS 协议
+\item
+  自动处理编码和错误
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  \textbf{工具调用} (\texttt{llm\_toolcall.py}):
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{parse\_tool\_call}: 解析 LLM 返回的工具调用请求
+\item
+  \texttt{execute\_tool\_call}: 执行工具并返回结果
+\item
+  \texttt{get\_tool\_definition}: 生成工具定义的 JSON 格式
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{3}
+\tightlist
+\item
+  \textbf{交互式对话}: 支持多轮对话，自动维护聊天历史
+\end{enumerate}
+
+\textbf{使用示例}:
+
+\begin{verbatim}
+> 列出当前目录的文件
+🔧 检测到工具调用: list_files
+   参数: {"directory": "."}
+
+============================================================
+🔧 工具执行结果
+============================================================
+✅ 工具执行成功
+   找到 5 个文件:
+     - __init__.py (file, 0.00 B)
+     - file_tools.py (file, 12.34 KB)
+     - llm_toolcall.py (file, 15.67 KB)
+
+> 访问 https://www.example.com
+🔧 检测到工具调用: curl_web
+   参数: {"url": "https://www.example.com"}
+
+============================================================
+🔧 工具执行结果
+============================================================
+✅ 工具执行成功
+   URL: https://www.example.com
+   内容长度: 1256 字节
+   状态码: 200
+\end{verbatim}
+
+\textbf{教学目标}: 1. 学习如何设计和实现工具调用机制 2.
+掌握工具定义和参数验证 3. 了解如何让 LLM 理解和使用工具 4.
+学习工具调用的解析和执行流程 5. 掌握网络请求和网页内容获取技术
+
+\subsubsection{Practice03:
+流式输出聊天客户端}\label{practice03-ux6d41ux5f0fux8f93ux51faux804aux5929ux5ba2ux6237ux7aef}
+
+\textbf{文件位置}: \texttt{practice03/llm\_chat.py}
+
+\textbf{功能说明}: - 支持终端界面输入聊天内容 - 实现流式输出，实时显示
+AI 响应 - 自动维护聊天历史，添加到上下文 -
+支持特殊命令：clear（清空历史）、history（查看历史） - 按 Ctrl+C
+退出程序
+
+\textbf{运行方法}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{python}\NormalTok{ practice03/llm_chat.py}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{核心功能}: 1. \textbf{流式输出}
+(\texttt{call\_llm\_api\_stream}): - 使用 SSE (Server-Sent Events)
+协议接收流式响应 - 实时输出 AI 生成的文本 - 提升用户体验，减少等待感
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  \textbf{聊天历史管理}:
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  自动保存用户和 AI 的对话
+\item
+  每次请求都包含完整的历史记录
+\item
+  支持清空历史和查看历史
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  \textbf{性能统计}:
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  实时显示 token 消耗
+\item
+  统计响应时间和处理速度
+\item
+  显示当前历史记录消息数
+\end{itemize}
+
+\textbf{使用示例}:
+
+\begin{verbatim}
+============================================================
+🚀 Practice03: 流式输出聊天客户端
+============================================================
+
+💡 提示:
+   - 输入消息与 AI 对话
+   - 输入 'clear' 清空聊天历史
+   - 输入 'history' 查看聊天历史
+   - 按 Ctrl+C 退出程序
+============================================================
+
+💬 开始聊天（按 Ctrl+C 退出）:
+============================================================
+
+你: 你好
+AI: 你好！很高兴见到你。我是一个 AI 助手，有什么我可以帮助你的吗？
+
+------------------------------------------------------------
+📊 总 Token 数: 32
+   响应时间: 1.23 秒
+   Token 处理速度: 18.52 tokens/秒
+   当前历史记录消息数: 2
+------------------------------------------------------------
+\end{verbatim}
+
+\textbf{教学目标}: 1. 学习如何实现流式输出 2. 掌握 SSE 协议的使用 3.
+了解如何维护聊天上下文 4. 学习终端交互程序的设计
+
+\subsubsection{Practice04:
+聊天记录总结}\label{practice04-ux804aux5929ux8bb0ux5f55ux603bux7ed3}
+
+\textbf{文件位置}: \texttt{practice04/llm\_chat\_summary.py}
+
+\textbf{功能说明}: -
+自动检测聊天历史，当超过5轮对话或上下文长度超过3k字符时触发总结 -
+对前70\%左右的对话内容进行压缩总结 -
+最后30\%的对话保留原文，确保最新信息不丢失 -
+将总结内容作为系统提示词的一部分，保持对话连贯性
+
+\textbf{运行方法}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{python}\NormalTok{ practice04/llm_chat_summary.py}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{核心功能}: 1. \textbf{自动检测机制}
+(\texttt{should\_summarize}): - 检测对话轮数（超过5轮触发） -
+检测上下文字符长度（超过3000字符触发） - 智能判断是否需要执行总结
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  \textbf{聊天总结} (\texttt{summarize\_chat\_history}):
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  将前70\%的对话发送给 LLM 生成摘要
+\item
+  保留后30\%的对话原文
+\item
+  生成包含主题、关键信息、用户需求、重要结论的摘要
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  \textbf{上下文压缩}:
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  原始消息 → 压缩后消息
+\item
+  保留系统消息和最新对话
+\item
+  显著减少 token 消耗
+\end{itemize}
+
+\textbf{使用示例}:
+
+\begin{verbatim}
+============================================================
+🚀 Practice04: 聊天记录总结功能
+============================================================
+
+💡 提示:
+   - 当聊天超过5轮或上下文长度超过3k时，自动执行总结
+   - 前70%左右的内容会被压缩，最后30%保留原文
+   - 输入 'clear' 清空聊天历史
+   - 输入 'history' 查看聊天历史
+   - 按 Ctrl+C 退出程序
+============================================================
+
+💬 开始聊天（按 Ctrl+C 退出）:
+============================================================
+
+你: 你好
+AI: 你好！很高兴见到你。
+
+...
+
+你: 继续讨论AI的发展
+AI: 当然可以，AI的发展确实非常迅速...
+
+============================================================
+💡 对话轮数 6 超过限制 5
+============================================================
+
+📝 检测到聊天历史过长，正在执行总结压缩...
+============================================================
+
+📊 总结统计:
+   总消息数: 12
+   系统消息: 1
+   需要压缩: 8
+   保留原文: 3
+
+🤖 正在调用 LLM 生成摘要...
+
+📋 生成的摘要:
+------------------------------------------------------------
+1. 对话主题：AI助手的能力和AI技术的发展
+2. 关键信息：用户了解了AI助手的功能和AI技术的发展历程
+3. 用户需求：讨论AI相关话题
+4. 重要结论：AI技术发展迅速，未来潜力巨大
+------------------------------------------------------------
+
+✅ 总结完成！
+   原始消息数: 12
+   压缩后消息数: 5
+   压缩率: 58.3%
+
+✅ 已将 12 条消息压缩为 5 条
+
+📊 总 Token 数: 150
+   响应时间: 5.23 秒
+   Token 处理速度: 18.52 tokens/秒
+   当前对话轮数: 3
+   当前上下文长度: 1250
+------------------------------------------------------------
+\end{verbatim}
+
+\textbf{教学目标}: 1. 学习如何实现聊天历史的自动管理和压缩 2.
+掌握对话上下文的智能控制技术 3. 了解 LLM 在总结任务中的应用 4.
+学习对话轮数和上下文字符长度的计算方法 5. 掌握聊天记录的结构化压缩策略
+
+\subsubsection{Practice04: 聊天记录总结 + 关键信息提取 +
+聊天历史搜索}\label{practice04-ux804aux5929ux8bb0ux5f55ux603bux7ed3-ux5173ux952eux4fe1ux606fux63d0ux53d6-ux804aux5929ux5386ux53f2ux641cux7d22}
+
+\textbf{文件位置}: \texttt{practice04/llm\_chat\_analyzer.py}
+
+\textbf{功能说明}: -
+自动检测聊天历史，当超过5轮对话或上下文长度超过3k字符时触发总结 -
+对前70\%左右的对话内容进行压缩总结，最后30\%的对话保留原文 -
+每5次聊天自动提取关键信息，按照5W规则（Who, What, When, Where,
+Why）进行分析 - 将关键信息增量保存到
+\texttt{D:\textbackslash{}chat-log\textbackslash{}log.txt} 文件 - 支持
+\texttt{/search} 命令搜索聊天历史，LLM 会根据日志文件和用户查询生成回答
+
+\textbf{运行方法}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{python}\NormalTok{ practice04/llm_chat_analyzer.py}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{核心功能}: 1. \textbf{自动检测机制}
+(\texttt{should\_summarize}): - 检测对话轮数（超过5轮触发） -
+检测上下文字符长度（超过3000字符触发） - 智能判断是否需要执行总结
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  \textbf{聊天总结} (\texttt{summarize\_chat\_history}):
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  将前70\%的对话发送给 LLM 生成摘要
+\item
+  保留后30\%的对话原文
+\item
+  生成包含主题、关键信息、用户需求、重要结论的摘要
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  \textbf{关键信息提取} (\texttt{extract\_key\_info}):
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  每5次聊天自动触发
+\item
+  按照5W规则提取：Who（谁）、What（做了什么事）、When（什么时候，可选）、Where（在何处，可选）、Why（为什么要做这个事，可选）
+\item
+  支持提取多条关键信息
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{3}
+\tightlist
+\item
+  \textbf{日志管理} (\texttt{save\_key\_info\_to\_log}):
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  自动创建 \texttt{D:\textbackslash{}chat-log} 目录
+\item
+  增量更新 \texttt{log.txt} 文件
+\item
+  每条记录包含时间戳和关键信息
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{4}
+\tightlist
+\item
+  \textbf{聊天历史搜索} (\texttt{search\_chat\_history}):
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  支持 \texttt{/search} 命令
+\item
+  读取 \texttt{log.txt} 文件
+\item
+  LLM 根据日志内容和用户查询生成回答
+\end{itemize}
+
+\textbf{使用示例}:
+
+\begin{verbatim}
+============================================================
+🚀 Practice04: 聊天记录总结 + 关键信息提取 + 聊天历史搜索
+============================================================
+
+💡 提示:
+   - 当聊天超过5轮或上下文长度超过3k时，自动执行总结
+   - 每5次聊天自动提取关键信息（5W规则）并保存到日志
+   - 输入 '/search 查询内容' 搜索聊天历史
+   - 输入 'clear' 清空聊天历史
+   - 输入 'history' 查看聊天历史
+   - 按 Ctrl+C 退出程序
+============================================================
+
+💬 开始聊天（按 Ctrl+C 退出）:
+============================================================
+
+你: 你好，我是小明
+AI: 你好小明！很高兴认识你。有什么我可以帮助你的吗？
+
+你: 我想学习Python编程
+AI: 很好的选择！Python是一门非常流行的编程语言...
+
+...
+
+你: 继续讨论Python
+AI: 当然可以，Python有很多应用领域...
+
+============================================================
+💡 已完成 5 次聊天，正在提取关键信息...
+============================================================
+
+🔍 正在提取关键信息（5W规则）...
+============================================================
+
+🤖 正在调用 LLM 提取关键信息...
+
+📋 提取的关键信息:
+------------------------------------------------------------
+【关键信息 1】
+- Who（谁）：小明
+- What（做了什么事）：想要学习Python编程
+- When（什么时候）：未明确
+- Where（在何处）：未明确
+- Why（为什么要做这个事）：想要学习编程技能
+------------------------------------------------------------
+
+✅ 已创建目录: D:\chat-log
+✅ 关键信息已保存到: D:\chat-log\log.txt
+✅ 关键信息已成功保存
+
+你: /search 小明学过什么
+============================================================
+🔍 正在搜索聊天历史...
+============================================================
+
+📂 已读取日志文件: D:\chat-log\log.txt
+📊 日志文件大小: 1234 字符
+
+🤖 正在调用 LLM 搜索...
+
+📋 搜索结果:
+------------------------------------------------------------
+根据聊天历史记录，小明想要学习Python编程。在对话中，小明表达了学习Python的兴趣，AI向他介绍了Python的特点和应用领域。
+------------------------------------------------------------
+\end{verbatim}
+
+\textbf{教学目标}: 1. 学习如何实现聊天历史的自动管理和压缩 2.
+掌握对话上下文的智能控制技术 3. 了解 LLM 在总结任务中的应用 4.
+学习对话轮数和上下文字符长度的计算方法 5. 掌握聊天记录的结构化压缩策略
+6. 学习5W规则的信息提取方法 7. 掌握日志文件的增量更新技术 8.
+了解如何实现聊天历史搜索功能 9. 学习如何让 LLM 理解和执行搜索任务
+
+\subsubsection{Practice05: 聊天记录总结 + 关键信息提取 + 聊天历史搜索 +
+AnythingLLM
+查询}\label{practice05-ux804aux5929ux8bb0ux5f55ux603bux7ed3-ux5173ux952eux4fe1ux606fux63d0ux53d6-ux804aux5929ux5386ux53f2ux641cux7d22-anythingllm-ux67e5ux8be2}
+
+\textbf{文件位置}: \texttt{practice05/llm\_chat\_analyzer.py}
+
+\textbf{功能说明}: -
+自动检测聊天历史，当超过5轮对话或上下文长度超过3k字符时触发总结 -
+对前70\%左右的对话内容进行压缩总结，最后30\%的对话保留原文 -
+每5次聊天自动提取关键信息，按照5W规则（Who, What, When, Where,
+Why）进行分析 - 将关键信息增量保存到
+\texttt{D:\textbackslash{}chat-log\textbackslash{}log.txt} 文件 - 支持
+\texttt{/search} 命令搜索聊天历史 - 支持 AnythingLLM
+文档仓库查询，当用户提到``文档仓库''、``文件仓库''、``仓库''等关键词时自动触发
+
+\textbf{运行方法}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{python}\NormalTok{ practice05/llm_chat_analyzer.py}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{核心功能}: 1. \textbf{自动检测机制}
+(\texttt{should\_summarize}): - 检测对话轮数（超过5轮触发） -
+检测上下文字符长度（超过3000字符触发） - 智能判断是否需要执行总结
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  \textbf{聊天总结} (\texttt{summarize\_chat\_history}):
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  将前70\%的对话发送给 LLM 生成摘要
+\item
+  保留后30\%的对话原文
+\item
+  生成包含主题、关键信息、用户需求、重要结论的摘要
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  \textbf{关键信息提取} (\texttt{extract\_key\_info}):
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  每5次聊天自动触发
+\item
+  按照5W规则提取：Who（谁）、What（做了什么事）、When（什么时候，可选）、Where（在何处，可选）、Why（为什么要做这个事，可选）
+\item
+  支持提取多条关键信息
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{3}
+\tightlist
+\item
+  \textbf{日志管理} (\texttt{save\_key\_info\_to\_log}):
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  自动创建 \texttt{D:\textbackslash{}chat-log} 目录
+\item
+  增量更新 \texttt{log.txt} 文件
+\item
+  每条记录包含时间戳和关键信息
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{4}
+\tightlist
+\item
+  \textbf{聊天历史搜索} (\texttt{search\_chat\_history}):
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  支持 \texttt{/search} 命令
+\item
+  读取 \texttt{log.txt} 文件
+\item
+  LLM 根据日志内容和用户查询生成回答
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{5}
+\tightlist
+\item
+  \textbf{AnythingLLM 查询} (\texttt{anythingllm\_query}):
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  使用 subprocess 模块调用 curl 命令
+\item
+  访问
+  \texttt{http://localhost:3001/api/v1/workspace/\{workspace\_slug\}/chat}
+  API 接口
+\item
+  使用 API 密钥进行认证
+\item
+  支持中文编码处理
+\item
+  详细的错误处理和日志输出
+\end{itemize}
+
+\textbf{使用示例}:
+
+\begin{verbatim}
+============================================================
+🚀 Practice05: 聊天记录总结 + 关键信息提取 + 聊天历史搜索 + AnythingLLM 查询
+============================================================
+
+💡 提示:
+   - 当聊天超过5轮或上下文长度超过3k时，自动执行总结
+   - 每5次聊天自动提取关键信息（5W规则）并保存到日志
+   - 输入 '/search 查询内容' 搜索聊天历史
+   - 提到 '文档仓库'、'文件仓库'、'仓库' 时查询 AnythingLLM
+   - 输入 'clear' 清空聊天历史
+   - 输入 'history' 查看聊天历史
+   - 按 Ctrl+C 退出程序
+============================================================
+
+💬 开始聊天（按 Ctrl+C 退出）:
+============================================================
+
+你: 文档仓库里有什么内容？
+============================================================
+📚 正在查询 AnythingLLM 文档仓库...
+============================================================
+
+📡 正在访问: http://localhost:3001/api/v1/workspace/default/chat
+💬 查询内容: 文档仓库里有什么内容？...
+
+📊 命令执行结果:
+   退出码: 0
+
+📋 查询结果:
+------------------------------------------------------------
+文档仓库中包含以下内容：
+1. 项目文档：详细介绍了项目的架构和使用方法
+2. 技术文档：包含 API 文档和开发指南
+3. 用户手册：指导用户如何使用系统
+------------------------------------------------------------
+
+🤖 文档仓库查询结果:
+文档仓库中包含以下内容：
+1. 项目文档：详细介绍了项目的架构和使用方法
+2. 技术文档：包含 API 文档和开发指南
+3. 用户手册：指导用户如何使用系统
+
+你: /search 文档仓库
+============================================================
+🔍 正在搜索聊天历史...
+============================================================
+
+📂 已读取日志文件: D:\chat-log\log.txt
+📊 日志文件大小: 1234 字符
+
+🤖 正在调用 LLM 搜索...
+
+📋 搜索结果:
+------------------------------------------------------------
+根据聊天历史记录，用户询问了文档仓库的内容，系统通过 AnythingLLM 查询到文档仓库中包含项目文档、技术文档和用户手册。
+------------------------------------------------------------
+\end{verbatim}
+
+\textbf{教学目标}: 1. 学习如何实现聊天历史的自动管理和压缩 2.
+掌握对话上下文的智能控制技术 3. 了解 LLM 在总结任务中的应用 4.
+学习对话轮数和上下文字符长度的计算方法 5. 掌握聊天记录的结构化压缩策略
+6. 学习5W规则的信息提取方法 7. 掌握日志文件的增量更新技术 8.
+了解如何实现聊天历史搜索功能 9. 学习如何让 LLM 理解和执行搜索任务 10.
+学习使用 subprocess 模块调用外部命令 11. 了解如何访问和使用 RESTful API
+12. 掌握 API 认证和错误处理技术
+
+\subsection{教学价值}\label{ux6559ux5b66ux4ef7ux503c}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{API 调用实践}：学习如何通过 HTTP 请求与 LLM API 进行交互
+\item
+  \textbf{环境配置管理}：了解如何使用环境变量文件管理敏感配置
+\item
+  \textbf{性能分析}：学习如何统计和分析 API 调用的性能指标
+\item
+  \textbf{错误处理}：掌握基本的异常处理和错误提示
+\item
+  \textbf{模块化设计}：了解如何组织 Python 项目结构
+\item
+  \textbf{聊天历史管理}：了解如何维护和使用聊天上下文
+\item
+  \textbf{工具调用机制}：学习如何让 AI 使用外部工具扩展能力
+\item
+  \textbf{流式输出技术}：掌握实时响应和用户体验优化
+\item
+  \textbf{网络请求处理}：学习如何使用 Python 标准库进行 HTTP
+  请求和网页内容获取
+\item
+  \textbf{信息提取技术}：掌握5W规则（Who, What, When, Where,
+  Why）的信息提取方法
+\item
+  \textbf{日志管理}：学习如何实现日志文件的增量更新和管理
+\item
+  \textbf{聊天历史搜索}：了解如何实现基于 LLM 的智能搜索功能
+\item
+  \textbf{外部命令调用}：学习使用 subprocess 模块调用外部命令（如 curl）
+\item
+  \textbf{RESTful API 集成}：了解如何访问和使用 RESTful API
+\item
+  \textbf{API 认证}：掌握如何使用 API 密钥进行身份验证
+\item
+  \textbf{中文编码处理}：学习如何处理中文编码问题
+\item
+  \textbf{多系统集成}：了解如何将 LLM 与其他系统（如 AnythingLLM）集成
+\end{enumerate}
+
+\subsection{注意事项}\label{ux6ce8ux610fux4e8bux9879}
+
+\begin{itemize}
+\tightlist
+\item
+  请保护好您的 API 密钥，不要将其提交到版本控制系统
+\item
+  注意 API 调用的频率限制和 token 消耗
+\item
+  确保网络连接正常，以避免 API 调用失败
+\item
+  对于大型项目，考虑使用更高级的 HTTP 库如 requests
+\item
+  流式输出需要 LLM 服务支持 SSE 协议
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{\linethickness}\end{center}
+
+\textbf{作者}：AI 智能体开发学习项目 \textbf{日期}：2026-04-16
+
+\end{document}

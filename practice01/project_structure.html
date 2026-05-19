@@ -1,0 +1,1224 @@
+<!--
+ * Copyright (c) 2015 Mountainstorm
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ * Original from https://github.com/mountainstorm/jquery.graphviz.svg/blob/master/demo.html
+ -->
+<html>
+	<head>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css">
+		<!-- <link rel="stylesheet" href="css/graphviz.svg.css"> -->
+	</head>
+
+	<style>
+        #instructions {
+            color: #000000;
+            position: absolute;
+            z-index: 100;
+            bottom: 0px;
+            left: 0px;
+        }
+    </style>
+	<body>
+		<h4 id="instructions">Click node to highlight; Shift-scroll to zoom; Esc to unhighlight</h4>
+		<div id="graph" style="width: 100%; height: 100%; overflow: scroll;"></div>
+
+		<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+		<script type="text/javascript" src="https://cdn.rawgit.com/jquery/jquery-mousewheel/master/jquery.mousewheel.min.js"></script>
+		<script type="text/javascript" src="https://cdn.rawgit.com/jquery/jquery-color/master/jquery.color.js"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script type="text/javascript">!function(t){"use strict";String.prototype.startsWith=function(t){return 0==this.indexOf(t)},String.prototype.endsWith=function(t){return-1!==this.indexOf(t,this.length-t.length)};var e=function(t,e){this.type=null,this.options=null,this.enabled=null,this.$element=null,this.init("graphviz.svg",t,e)};e.VERSION="1.0.1",e.GVPT_2_PX=32.5,e.DEFAULTS={url:null,svg:null,shrink:"0.125pt",tooltips:{init:function(e){var i=t(this);i.tooltip({container:e,placement:"auto left",animation:!1,viewport:null}).on("hide.bs.tooltip",function(){if(i.attr("data-tooltip-keepvisible"))return!1})},show:function(){var e=t(this);e.attr("data-tooltip-keepvisible",!0),e.tooltip("show")},hide:function(){var e=t(this);e.removeAttr("data-tooltip-keepvisible"),e.tooltip("hide")},update:function(){var e=t(this);e.attr("data-tooltip-keepvisible")&&e.tooltip("show")}},zoom:!0,highlight:{selected:function(t,e){return t},unselected:function(t,e){return jQuery.Color(t).transition(e,.9)}},ready:null},e.prototype.init=function(e,i,n){if(this.enabled=!0,this.type=e,this.$element=t(i),this.options=this.getOptions(n),n.url){var o=this;t.get(n.url,null,function(e){var i=t("svg",e);o.$element.html(document.adoptNode(i[0])),o.setup()},"xml")}else n.svg&&this.$element.html(n.svg),this.setup()},e.prototype.getDefaults=function(){return e.DEFAULTS},e.prototype.getOptions=function(e){return(e=t.extend({},this.getDefaults(),this.$element.data(),e)).shrink&&("object"!=typeof e.shrink&&(e.shrink={x:e.shrink,y:e.shrink}),e.shrink.x=this.convertToPx(e.shrink.x),e.shrink.y=this.convertToPx(e.shrink.y)),e},e.prototype.setup=function(){var e=this.options,i=t(this.$element.children("svg")),n=i.children("g:first");this.$svg=i,this.$graph=n,this.$background=n.children("polygon:first"),this.$nodes=n.children(".node"),this.$edges=n.children(".edge"),this._nodesByName={},this._edgesByName={},this.$element.addClass("graphviz-svg"),this.$background.length&&this.$element.css("background",this.$background.attr("fill"));var o=this;this.$nodes.each(function(){o.setupNodesEdges(t(this),!0)}),this.$edges.each(function(){o.setupNodesEdges(t(this),!1)});var r=this.$graph.children("title");this.$graph.attr("data-name",r.text()),r.remove(),e.zoom&&this.setupZoom(),e.ready&&e.ready.call(this)},e.prototype.setupNodesEdges=function(e,i){var n=this,o=this.options;e.find("polygon, ellipse, path").each(function(){var e=t(this);e.data("graphviz.svg.color",{fill:e.attr("fill"),stroke:e.attr("stroke")}),i&&o.shrink&&n.scaleNode(e)});var r,s,h=e.children("title");if(h[0]){var a=h.text().replace(/:[snew][ew]?/g,"");e.attr("data-name",a),h.remove(),i?this._nodesByName[a]=e[0]:this._edgesByName[a]=e[0];for(var l=e[0].previousSibling;l&&8!=l.nodeType;)l=l.previousSibling;if(null!=l&&8==l.nodeType){var p=(r=l.nodeValue.trim(),(s=document.createElement("div")).innerHTML=r,s.childNodes[0].nodeValue);p!=a&&e.attr("data-comment",p)}}e.children("a").filter(function(){return t(this).attr("xlink:title")}).each(function(){var e=t(this);e.attr("title",e.attr("xlink:title")),e.removeAttr("xlink:title"),o.tooltips&&o.tooltips.init.call(this,n.$element)})},e.prototype.setupZoom=function(){var t=this,e=this.$element,i=this.$svg;this.zoom={width:i.attr("width"),height:i.attr("height"),percentage:null},this.scaleView(100),e.mousewheel(function(n){if(n.shiftKey){var o=t.zoom.percentage;(o-=n.deltaY*n.deltaFactor)<100&&(o=100);var r=n.pageX-i.offset().left,s=n.pageY-i.offset().top,h=r/i.width(),a=s/i.height(),l=n.pageX-e.offset().left,p=n.pageY-e.offset().top;return t.scaleView(o),e.scrollLeft(h*i.width()+.5-l),e.scrollTop(a*i.height()+.5-p),!1}})},e.prototype.scaleView=function(t){var e=this,i=this.$svg;i.attr("width",t+"%"),i.attr("height",t+"%"),this.zoom.percentage=t,this.$nodes.add(this.$edges).children("a[title]").each(function(){e.options.tooltips.update.call(this)})},e.prototype.scaleNode=function(t){var e=this.options.shrink.x,i=this.options.shrink.y,n=t.prop("tagName");if("ellipse"==n)t.attr("rx",parseFloat(t.attr("rx"))-e),t.attr("ry",parseFloat(t.attr("ry"))-i);else if("polygon"==n){var o=t[0].getBBox(),r=o.x+o.width/2,s=o.y+o.height/2,h=t.attr("points").split(" "),a="";for(var l in h){var p=h[l].split(","),d=parseFloat(p[0]),u=parseFloat(p[1]);a+=(r-d)/(o.width/2)*e+d+","+((s-u)/(o.height/2)*i+u)+" "}t.attr("points",a)}},e.prototype.convertToPx=function(t){var i=t;if("string"==typeof t){var n=t.length,o=1;t.endsWith("px")?n-=2:t.endsWith("pt")&&(n-=2,o=e.GVPT_2_PX),i=parseFloat(t.substring(0,n))*o}return i},e.prototype.findEdge=function(t,e,i){var n=[];for(var o in this._edgesByName){var r=e(t,o);r&&(i&&i.push(this._edgesByName[o]),n.push(r))}return n},e.prototype.findLinked=function(e,i,n,o){var r=t(e),s=null;i&&(s=o);var h=this.findEdge(r.attr("data-name"),n,s);for(var a in h){var l=this._nodesByName[h[a]];o.is(l)||(o.push(l),this.findLinked(l,i,n,o))}},e.prototype.colorElement=function(e,i){var n=this.$element.css("background");e.find("polygon, ellipse, path").each(function(){var e=t(this),o=e.data("graphviz.svg.color");o.fill&&"path"!=e.prop("tagName")&&e.attr("fill",i(o.fill,n)),o.stroke&&e.attr("stroke",i(o.stroke,n))})},e.prototype.restoreElement=function(e){e.find("polygon, ellipse, path").each(function(){var e=t(this),i=e.data("graphviz.svg.color");i.fill&&e.attr("fill",i.fill),i.stroke&&e.attr("stroke",i.stroke)})},e.prototype.nodes=function(){return this.$nodes},e.prototype.edges=function(){return this.$edges},e.prototype.nodesByName=function(){return this._nodesByName},e.prototype.edgesByName=function(){return this._edgesByName},e.prototype.linkedTo=function(e,i){var n=t();return this.findLinked(e,i,function(t,e){var i=null,n="->"+t;return e.endsWith(n)&&(i=e.substring(0,e.length-n.length)),i},n),n},e.prototype.linkedFrom=function(e,i){var n=t();return this.findLinked(e,i,function(t,e){var i=null,n=t+"->";return e.startsWith(n)&&(i=e.substring(n.length)),i},n),n},e.prototype.linked=function(e,i){var n=t();return this.findLinked(e,i,function(t,e){return"^"+name+"--(.*)$"},n),this.findLinked(e,i,function(t,e){return"^(.*)--"+name+"$"},n),n},e.prototype.tooltip=function(e,i){var n=this.options;e.each(function(){t(this).children("a[title]").each(function(){i?n.tooltips.show.call(this):n.tooltips.hide.call(this)})})},e.prototype.bringToFront=function(t){t.detach().appendTo(this.$graph)},e.prototype.sendToBack=function(t){this.$background.length?$element.insertAfter(this.$background):t.detach().prependTo(this.$graph)},e.prototype.highlight=function(e,i){var n=this,o=this.options,r=this.$nodes.add(this.$edges);e&&e.length>0?(r.not(e).each(function(){n.colorElement(t(this),o.highlight.unselected),n.tooltip(t(this))}),e.each(function(){n.colorElement(t(this),o.highlight.selected)}),i&&this.tooltip(e,!0)):(r.each(function(){n.restoreElement(t(this))}),this.tooltip(r))},e.prototype.destroy=function(){var t=this;this.hide(function(){t.$element.off("."+t.type).removeData(t.type)})};var i=t.fn.graphviz;t.fn.graphviz=function(i){return this.each(function(){var n=t(this),o=n.data("graphviz.svg"),r="object"==typeof i&&i;!o&&/destroy/.test(i)||(o||n.data("graphviz.svg",o=new e(this,r)),"string"==typeof i&&o[i]())})},t.fn.graphviz.Constructor=e,t.fn.graphviz.noConflict=function(){return t.fn.graphviz=i,this}}(jQuery);</script>
+		<script type="text/javascript">
+ 			$(document).ready(function(){
+                $("#graph").graphviz({
+                    svg: `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.5 (20260411.2331)
+ -->
+<!-- Title: G Pages: 1 -->
+<svg width="3960pt" height="486pt"
+ viewBox="0.00 0.00 3960.00 486.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 482)">
+<title>G</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-482 3955.54,-482 3955.54,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_G</title>
+<path fill="#808080" fill-opacity="0.094118" stroke="black" d="M29.77,-8C29.77,-8 3923.77,-8 3923.77,-8 3929.77,-8 3935.77,-14 3935.77,-20 3935.77,-20 3935.77,-458 3935.77,-458 3935.77,-464 3929.77,-470 3923.77,-470 3923.77,-470 29.77,-470 29.77,-470 23.77,-470 17.77,-464 17.77,-458 17.77,-458 17.77,-20 17.77,-20 17.77,-14 23.77,-8 29.77,-8"/>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_practice01__app</title>
+<path fill="#808080" fill-opacity="0.094118" stroke="black" d="M89.77,-185C89.77,-185 1526.77,-185 1526.77,-185 1532.77,-185 1538.77,-191 1538.77,-197 1538.77,-197 1538.77,-406 1538.77,-406 1538.77,-412 1532.77,-418 1526.77,-418 1526.77,-418 89.77,-418 89.77,-418 83.77,-418 77.77,-412 77.77,-406 77.77,-406 77.77,-197 77.77,-197 77.77,-191 83.77,-185 89.77,-185"/>
+<text xml:space="preserve" text-anchor="middle" x="808.27" y="-400.7" font-family="Times New Roman,serif" font-size="14.00">practice01.app</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_practice01__app__MockYOLOModel</title>
+<path fill="#808080" fill-opacity="0.094118" stroke="black" d="M1135.77,-100.5C1135.77,-100.5 1316.77,-100.5 1316.77,-100.5 1322.77,-100.5 1328.77,-106.5 1328.77,-112.5 1328.77,-112.5 1328.77,-165 1328.77,-165 1328.77,-171 1322.77,-177 1316.77,-177 1316.77,-177 1135.77,-177 1135.77,-177 1129.77,-177 1123.77,-171 1123.77,-165 1123.77,-165 1123.77,-112.5 1123.77,-112.5 1123.77,-106.5 1129.77,-100.5 1135.77,-100.5"/>
+<text xml:space="preserve" text-anchor="middle" x="1226.27" y="-159.7" font-family="Times New Roman,serif" font-size="14.00">practice01.app.MockYOLOModel</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_practice01__app__Record</title>
+<path fill="#808080" fill-opacity="0.094118" stroke="black" d="M1558.77,-185C1558.77,-185 1817.77,-185 1817.77,-185 1823.77,-185 1829.77,-191 1829.77,-197 1829.77,-197 1829.77,-249.5 1829.77,-249.5 1829.77,-255.5 1823.77,-261.5 1817.77,-261.5 1817.77,-261.5 1558.77,-261.5 1558.77,-261.5 1552.77,-261.5 1546.77,-255.5 1546.77,-249.5 1546.77,-249.5 1546.77,-197 1546.77,-197 1546.77,-191 1552.77,-185 1558.77,-185"/>
+<text xml:space="preserve" text-anchor="middle" x="1688.27" y="-244.2" font-family="Times New Roman,serif" font-size="14.00">practice01.app.Record</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_practice01__app__User</title>
+<path fill="#808080" fill-opacity="0.094118" stroke="black" d="M1849.77,-185C1849.77,-185 2120.77,-185 2120.77,-185 2126.77,-185 2132.77,-191 2132.77,-197 2132.77,-197 2132.77,-249.5 2132.77,-249.5 2132.77,-255.5 2126.77,-261.5 2120.77,-261.5 2120.77,-261.5 1849.77,-261.5 1849.77,-261.5 1843.77,-261.5 1837.77,-255.5 1837.77,-249.5 1837.77,-249.5 1837.77,-197 1837.77,-197 1837.77,-191 1843.77,-185 1849.77,-185"/>
+<text xml:space="preserve" text-anchor="middle" x="1985.27" y="-244.2" font-family="Times New Roman,serif" font-size="14.00">practice01.app.User</text>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_practice01__llm_client</title>
+<path fill="#808080" fill-opacity="0.094118" stroke="black" d="M1793.77,-269.5C1793.77,-269.5 2165.77,-269.5 2165.77,-269.5 2171.77,-269.5 2177.77,-275.5 2177.77,-281.5 2177.77,-281.5 2177.77,-406 2177.77,-406 2177.77,-412 2171.77,-418 2165.77,-418 2165.77,-418 1793.77,-418 1793.77,-418 1787.77,-418 1781.77,-412 1781.77,-406 1781.77,-406 1781.77,-281.5 1781.77,-281.5 1781.77,-275.5 1787.77,-269.5 1793.77,-269.5"/>
+<text xml:space="preserve" text-anchor="middle" x="1979.77" y="-400.7" font-family="Times New Roman,serif" font-size="14.00">practice01.llm_client</text>
+</g>
+<g id="clust7" class="cluster">
+<title>cluster_practice01__test_api</title>
+<path fill="#808080" fill-opacity="0.094118" stroke="black" d="M2197.77,-185C2197.77,-185 3903.77,-185 3903.77,-185 3909.77,-185 3915.77,-191 3915.77,-197 3915.77,-197 3915.77,-406 3915.77,-406 3915.77,-412 3909.77,-418 3903.77,-418 3903.77,-418 2197.77,-418 2197.77,-418 2191.77,-418 2185.77,-412 2185.77,-406 2185.77,-406 2185.77,-197 2185.77,-197 2185.77,-191 2191.77,-185 2197.77,-185"/>
+<text xml:space="preserve" text-anchor="middle" x="3050.77" y="-400.7" font-family="Times New Roman,serif" font-size="14.00">practice01.test_api</text>
+</g>
+<g id="clust8" class="cluster">
+<title>cluster_practice01__test_api__test_case</title>
+<path fill="#808080" fill-opacity="0.094118" stroke="black" d="M3171.77,-100.5C3171.77,-100.5 3318.77,-100.5 3318.77,-100.5 3324.77,-100.5 3330.77,-106.5 3330.77,-112.5 3330.77,-112.5 3330.77,-165 3330.77,-165 3330.77,-171 3324.77,-177 3318.77,-177 3318.77,-177 3171.77,-177 3171.77,-177 3165.77,-177 3159.77,-171 3159.77,-165 3159.77,-165 3159.77,-112.5 3159.77,-112.5 3159.77,-106.5 3165.77,-100.5 3171.77,-100.5"/>
+<text xml:space="preserve" text-anchor="middle" x="3245.27" y="-159.7" font-family="Times New Roman,serif" font-size="14.00">practice01.test_api.test_case</text>
+</g>
+<g id="clust9" class="cluster">
+<title>cluster_practice01__test_api__test_case__decorator</title>
+<path fill="#808080" fill-opacity="0.094118" stroke="black" d="M3144.77,-16C3144.77,-16 3345.77,-16 3345.77,-16 3351.77,-16 3357.77,-22 3357.77,-28 3357.77,-28 3357.77,-80.5 3357.77,-80.5 3357.77,-86.5 3351.77,-92.5 3345.77,-92.5 3345.77,-92.5 3144.77,-92.5 3144.77,-92.5 3138.77,-92.5 3132.77,-86.5 3132.77,-80.5 3132.77,-80.5 3132.77,-28 3132.77,-28 3132.77,-22 3138.77,-16 3144.77,-16"/>
+<text xml:space="preserve" text-anchor="middle" x="3245.27" y="-75.2" font-family="Times New Roman,serif" font-size="14.00">practice01.test_api.test_case.decorator</text>
+</g>
+<!-- practice01 -->
+<g id="node1" class="node">
+<title>practice01</title>
+<g id="a_node1"><a xlink:title="practice01&#10;D:&#10;anzeguitrae111practice01__init__.py">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="161.77" cy="-444" rx="49.3" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="161.77" y="-438.95" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">practice01</text>
+</a>
+</g>
+</g>
+<!-- practice01__app -->
+<g id="node2" class="node">
+<title>practice01__app</title>
+<g id="a_node2"><a xlink:title="practice01.app&#10;D:&#10;anzeguitrae111practice01app.py">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="379.77" cy="-444" rx="65.17" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="379.77" y="-438.95" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">practice01.app</text>
+</a>
+</g>
+</g>
+<!-- practice01__app__MockYOLOModel -->
+<g id="node5" class="node">
+<title>practice01__app__MockYOLOModel</title>
+<g id="a_node5"><a xlink:title="practice01.app.MockYOLOModel&#10;D:&#10;anzeguitrae111practice01app.py:121&#10;class in practice01.app">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="306.77" cy="-211" rx="83.08" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="306.77" y="-205.95" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">MockYOLOModel</text>
+</a>
+</g>
+</g>
+<!-- practice01__app&#45;&gt;practice01__app__MockYOLOModel -->
+<g id="edge1" class="edge">
+<title>practice01__app&#45;&gt;practice01__app__MockYOLOModel</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M319.76,-436.65C287.36,-433.04 246.84,-428.72 210.77,-426 200.9,-425.25 39.61,-425.15 32.77,-418 -12.84,-370.29 -8.66,-320.88 32.77,-269.5 55.49,-241.32 146.53,-226.25 217.57,-218.7"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="217.68,-222.21 227.28,-217.71 216.97,-215.25 217.68,-222.21"/>
+</g>
+<!-- practice01__app&#45;&gt;practice01__app__MockYOLOModel -->
+<g id="edge2" class="edge">
+<title>practice01__app&#45;&gt;practice01__app__MockYOLOModel</title>
+<path fill="none" stroke="#000000" d="M322.33,-435.11C294.18,-431.87 259.83,-428.35 228.77,-426 218.9,-425.25 57.61,-425.15 50.77,-418 5.16,-370.29 9.34,-320.88 50.77,-269.5 72.17,-242.95 154.22,-228.04 219.78,-220.09"/>
+<polygon fill="#000000" stroke="#000000" points="219.95,-223.6 229.48,-218.96 219.14,-216.64 219.95,-223.6"/>
+</g>
+<!-- practice01__app__Record -->
+<g id="node6" class="node">
+<title>practice01__app__Record</title>
+<g id="a_node6"><a xlink:title="practice01.app.Record&#10;D:&#10;anzeguitrae111practice01app.py:53&#10;class in practice01.app">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="1398.77" cy="-295.5" rx="37.53" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="1398.77" y="-290.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">Record</text>
+</a>
+</g>
+</g>
+<!-- practice01__app&#45;&gt;practice01__app__Record -->
+<g id="edge3" class="edge">
+<title>practice01__app&#45;&gt;practice01__app__Record</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M386.72,-425.81C387.76,-423.2 388.8,-420.53 389.77,-418 401.34,-387.73 388.58,-368.59 414.77,-349.5 497.16,-289.42 1230.86,-328.12 1331.77,-313.5 1339.76,-312.34 1348.18,-310.62 1356.25,-308.71"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="1357.03,-312.12 1365.88,-306.29 1355.33,-305.33 1357.03,-312.12"/>
+</g>
+<!-- practice01__app__User -->
+<g id="node7" class="node">
+<title>practice01__app__User</title>
+<g id="a_node7"><a xlink:title="practice01.app.User&#10;D:&#10;anzeguitrae111practice01app.py:38&#10;class in practice01.app">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="1502.77" cy="-295.5" rx="28.32" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="1502.77" y="-290.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">User</text>
+</a>
+</g>
+</g>
+<!-- practice01__app&#45;&gt;practice01__app__User -->
+<g id="edge4" class="edge">
+<title>practice01__app&#45;&gt;practice01__app__User</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M400.69,-426.67C403.32,-423.98 405.78,-421.06 407.77,-418 425.2,-391.19 404.27,-368.79 429.77,-349.5 474.81,-315.42 1390.03,-322.65 1445.77,-313.5 1452.92,-312.33 1460.44,-310.52 1467.59,-308.51"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="1468.38,-311.93 1476.95,-305.69 1466.37,-305.22 1468.38,-311.93"/>
+</g>
+<!-- practice01__app__base64_to_image -->
+<g id="node8" class="node">
+<title>practice01__app__base64_to_image</title>
+<g id="a_node8"><a xlink:title="practice01.app.base64_to_image&#10;D:&#10;anzeguitrae111practice01app.py:99&#10;function in practice01.app">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="161.77" cy="-295.5" rx="75.92" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="161.77" y="-290.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">base64_to_image</text>
+</a>
+</g>
+</g>
+<!-- practice01__app&#45;&gt;practice01__app__base64_to_image -->
+<g id="edge5" class="edge">
+<title>practice01__app&#45;&gt;practice01__app__base64_to_image</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M318.53,-437.53C299.97,-433.89 280.18,-427.89 263.77,-418 225.11,-394.7 194.15,-351.45 176.87,-323.33"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="180.04,-321.81 171.91,-315.02 174.03,-325.4 180.04,-321.81"/>
+</g>
+<!-- practice01__app__check_token -->
+<g id="node9" class="node">
+<title>practice01__app__check_token</title>
+<g id="a_node9"><a xlink:title="practice01.app.check_token&#10;D:&#10;anzeguitrae111practice01app.py:85&#10;function in practice01.app">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="1112.77" cy="-295.5" rx="57.49" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="1112.77" y="-290.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">check_token</text>
+</a>
+</g>
+</g>
+<!-- practice01__app&#45;&gt;practice01__app__check_token -->
+<g id="edge6" class="edge">
+<title>practice01__app&#45;&gt;practice01__app__check_token</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M372.29,-425.96C364.4,-405.02 355.53,-369.79 374.77,-349.5 426.21,-295.23 972.87,-324.88 1046.77,-313.5 1051.18,-312.82 1055.73,-311.97 1060.27,-311.02"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="1061.03,-314.44 1070.01,-308.81 1059.48,-307.61 1061.03,-314.44"/>
+</g>
+<!-- practice01__app__del_cache_token -->
+<g id="node10" class="node">
+<title>practice01__app__del_cache_token</title>
+<g id="a_node10"><a xlink:title="practice01.app.del_cache_token&#10;D:&#10;anzeguitrae111practice01app.py:94&#10;function in practice01.app">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="964.77" cy="-295.5" rx="72.85" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="964.77" y="-290.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">del_cache_token</text>
+</a>
+</g>
+</g>
+<!-- practice01__app&#45;&gt;practice01__app__del_cache_token -->
+<g id="edge7" class="edge">
+<title>practice01__app&#45;&gt;practice01__app__del_cache_token</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M360.01,-426.59C357.88,-423.94 356.04,-421.06 354.77,-418 343.12,-389.87 333.99,-371.75 354.77,-349.5 394.91,-306.53 824.51,-321.49 882.77,-313.5 888.8,-312.67 895.05,-311.66 901.29,-310.55"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="901.79,-314.02 910.97,-308.73 900.5,-307.14 901.79,-314.02"/>
+</g>
+<!-- practice01__app__draw_box -->
+<g id="node11" class="node">
+<title>practice01__app__draw_box</title>
+<g id="a_node11"><a xlink:title="practice01.app.draw_box&#10;D:&#10;anzeguitrae111practice01app.py:151&#10;function in practice01.app">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="303.77" cy="-295.5" rx="47.77" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="303.77" y="-290.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">draw_box</text>
+</a>
+</g>
+</g>
+<!-- practice01__app&#45;&gt;practice01__app__draw_box -->
+<g id="edge8" class="edge">
+<title>practice01__app&#45;&gt;practice01__app__draw_box</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M322.17,-435.2C302.42,-431.25 283.76,-425.64 277.77,-418 256.38,-390.73 272.08,-349.83 286.74,-323.15"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="289.68,-325.06 291.67,-314.65 283.63,-321.54 289.68,-325.06"/>
+</g>
+<!-- practice01__app__fruit_detect -->
+<g id="node12" class="node">
+<title>practice01__app__fruit_detect</title>
+<g id="a_node12"><a xlink:title="practice01.app.fruit_detect&#10;D:&#10;anzeguitrae111practice01app.py:239&#10;function in practice01.app">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="491.77" cy="-367.5" rx="53.4" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="491.77" y="-362.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">fruit_detect</text>
+</a>
+</g>
+</g>
+<!-- practice01__app&#45;&gt;practice01__app__fruit_detect -->
+<g id="edge9" class="edge">
+<title>practice01__app&#45;&gt;practice01__app__fruit_detect</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M415.48,-428.59C422.07,-425.42 428.77,-421.85 434.77,-418 446.08,-410.73 457.48,-401.34 467.08,-392.69"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="469.27,-395.44 474.23,-386.07 464.52,-390.3 469.27,-395.44"/>
+</g>
+<!-- practice01__app__generate_token -->
+<g id="node13" class="node">
+<title>practice01__app__generate_token</title>
+<g id="a_node13"><a xlink:title="practice01.app.generate_token&#10;D:&#10;anzeguitrae111practice01app.py:79&#10;function in practice01.app">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="1255.77" cy="-295.5" rx="67.22" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="1255.77" y="-290.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">generate_token</text>
+</a>
+</g>
+</g>
+<!-- practice01__app&#45;&gt;practice01__app__generate_token -->
+<g id="edge10" class="edge">
+<title>practice01__app&#45;&gt;practice01__app__generate_token</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M376.79,-425.86C374.16,-404.48 373.55,-368.44 394.77,-349.5 459.82,-291.42 1092.32,-324.94 1178.77,-313.5 1184.48,-312.74 1190.38,-311.78 1196.28,-310.69"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="1196.91,-314.14 1206.04,-308.77 1195.55,-307.27 1196.91,-314.14"/>
+</g>
+<!-- practice01__app__init_db -->
+<g id="node14" class="node">
+<title>practice01__app__init_db</title>
+<g id="a_node14"><a xlink:title="practice01.app.init_db&#10;D:&#10;anzeguitrae111practice01app.py:380&#10;function in practice01.app">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="1493.77" cy="-367.5" rx="37.02" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="1493.77" y="-362.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">init_db</text>
+</a>
+</g>
+</g>
+<!-- practice01__app&#45;&gt;practice01__app__init_db -->
+<g id="edge11" class="edge">
+<title>practice01__app&#45;&gt;practice01__app__init_db</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M445.23,-442.86C669.23,-442.19 1393.26,-438.47 1438.77,-418 1450.89,-412.55 1461.3,-402.22 1469.91,-392.41"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="1472.52,-394.73 1476.33,-384.85 1467.19,-390.2 1472.52,-394.73"/>
+</g>
+<!-- practice01__app&#45;&gt;practice01__app__init_db -->
+<g id="edge12" class="edge">
+<title>practice01__app&#45;&gt;practice01__app__init_db</title>
+<path fill="none" stroke="#000000" d="M444.94,-442.88C671.17,-442.27 1410.76,-438.7 1456.77,-418 1467.77,-413.05 1477.35,-404.09 1484.3,-395.15"/>
+<polygon fill="#000000" stroke="#000000" points="1487.19,-397.12 1489.9,-386.88 1481.39,-393.2 1487.19,-397.12"/>
+</g>
+<!-- practice01__app__load_yolo_model -->
+<g id="node15" class="node">
+<title>practice01__app__load_yolo_model</title>
+<g id="a_node15"><a xlink:title="practice01.app.load_yolo_model&#10;D:&#10;anzeguitrae111practice01app.py:143&#10;function in practice01.app">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="445.77" cy="-295.5" rx="75.92" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="445.77" y="-290.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">load_yolo_model</text>
+</a>
+</g>
+</g>
+<!-- practice01__app&#45;&gt;practice01__app__load_yolo_model -->
+<g id="edge13" class="edge">
+<title>practice01__app&#45;&gt;practice01__app__load_yolo_model</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M320.58,-436.24C310.5,-432.4 301.22,-426.62 294.77,-418 276.53,-393.62 277.16,-374.34 294.77,-349.5 305.33,-334.61 344.83,-321.04 380.78,-311.36"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="381.54,-314.78 390.33,-308.87 379.77,-308.01 381.54,-314.78"/>
+</g>
+<!-- practice01__app__md5 -->
+<g id="node16" class="node">
+<title>practice01__app__md5</title>
+<g id="a_node16"><a xlink:title="practice01.app.md5&#10;D:&#10;anzeguitrae111practice01app.py:75&#10;function in practice01.app">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="1298.77" cy="-211" rx="27.81" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="1298.77" y="-205.95" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">md5</text>
+</a>
+</g>
+</g>
+<!-- practice01__app&#45;&gt;practice01__app__md5 -->
+<g id="edge14" class="edge">
+<title>practice01__app&#45;&gt;practice01__app__md5</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M319.66,-436.88C268.79,-431.39 202.35,-423.41 190.77,-418 115.37,-382.81 18.18,-328.58 76.77,-269.5 86.1,-260.09 1017.58,-262.76 1030.77,-261.5 1114.23,-253.5 1210.55,-232.86 1261.94,-220.91"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="1262.7,-224.33 1271.64,-218.63 1261.1,-217.51 1262.7,-224.33"/>
+</g>
+<!-- practice01__app__parse_yolo_result -->
+<g id="node17" class="node">
+<title>practice01__app__parse_yolo_result</title>
+<g id="a_node17"><a xlink:title="practice01.app.parse_yolo_result&#10;D:&#10;anzeguitrae111practice01app.py:147&#10;function in practice01.app">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="615.77" cy="-295.5" rx="76.43" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="615.77" y="-290.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">parse_yolo_result</text>
+</a>
+</g>
+</g>
+<!-- practice01__app&#45;&gt;practice01__app__parse_yolo_result -->
+<g id="edge15" class="edge">
+<title>practice01__app&#45;&gt;practice01__app__parse_yolo_result</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M330.71,-431.82C324.44,-428.38 318.81,-423.88 314.77,-418 297.53,-392.9 295.09,-372.73 314.77,-349.5 346.22,-312.37 482.9,-322.27 530.77,-313.5 536.6,-312.43 542.64,-311.29 548.7,-310.12"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="548.95,-313.64 558.09,-308.29 547.61,-306.77 548.95,-313.64"/>
+</g>
+<!-- practice01__app__record_delete -->
+<g id="node18" class="node">
+<title>practice01__app__record_delete</title>
+<g id="a_node18"><a xlink:title="practice01.app.record_delete&#10;D:&#10;anzeguitrae111practice01app.py:332&#10;function in practice01.app">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="1141.77" cy="-367.5" rx="61.08" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="1141.77" y="-362.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">record_delete</text>
+</a>
+</g>
+</g>
+<!-- practice01__app&#45;&gt;practice01__app__record_delete -->
+<g id="edge16" class="edge">
+<title>practice01__app&#45;&gt;practice01__app__record_delete</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M445.15,-442.76C606.26,-441.87 1013.51,-437.68 1071.77,-418 1087.73,-412.61 1103.25,-402.31 1115.61,-392.5"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="1117.79,-395.24 1123.24,-386.15 1113.31,-389.86 1117.79,-395.24"/>
+</g>
+<!-- practice01__app__record_list -->
+<g id="node19" class="node">
+<title>practice01__app__record_list</title>
+<g id="a_node19"><a xlink:title="practice01.app.record_list&#10;D:&#10;anzeguitrae111practice01app.py:303&#10;function in practice01.app">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="1270.77" cy="-367.5" rx="50.33" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="1270.77" y="-362.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">record_list</text>
+</a>
+</g>
+</g>
+<!-- practice01__app&#45;&gt;practice01__app__record_list -->
+<g id="edge17" class="edge">
+<title>practice01__app&#45;&gt;practice01__app__record_list</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M445.15,-443.49C628.88,-444.53 1141.04,-444.95 1211.77,-418 1225.63,-412.72 1238.56,-402.72 1248.76,-393.08"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="1250.99,-395.8 1255.58,-386.25 1246.03,-390.86 1250.99,-395.8"/>
+</g>
+<!-- practice01__app__result_file -->
+<g id="node20" class="node">
+<title>practice01__app__result_file</title>
+<g id="a_node20"><a xlink:title="practice01.app.result_file&#10;D:&#10;anzeguitrae111practice01app.py:375&#10;function in practice01.app">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="746.77" cy="-367.5" rx="48.28" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="746.77" y="-362.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">result_file</text>
+</a>
+</g>
+</g>
+<!-- practice01__app&#45;&gt;practice01__app__result_file -->
+<g id="edge18" class="edge">
+<title>practice01__app&#45;&gt;practice01__app__result_file</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M445.19,-442.48C522.83,-441.05 647.15,-435.91 689.77,-418 703.04,-412.42 715.42,-402.52 725.22,-393.03"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="727.6,-395.6 732.08,-386 722.59,-390.72 727.6,-395.6"/>
+</g>
+<!-- practice01__app__save_server_image -->
+<g id="node21" class="node">
+<title>practice01__app__save_server_image</title>
+<g id="a_node21"><a xlink:title="practice01.app.save_server_image&#10;D:&#10;anzeguitrae111practice01app.py:110&#10;function in practice01.app">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="791.77" cy="-295.5" rx="82.06" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="791.77" y="-290.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">save_server_image</text>
+</a>
+</g>
+</g>
+<!-- practice01__app&#45;&gt;practice01__app__save_server_image -->
+<g id="edge19" class="edge">
+<title>practice01__app&#45;&gt;practice01__app__save_server_image</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M344.5,-428.64C340.63,-425.68 337.22,-422.16 334.77,-418 319.33,-391.76 314.32,-372.06 334.77,-349.5 362.21,-319.22 660.31,-319.26 700.77,-313.5 707.48,-312.55 714.44,-311.44 721.4,-310.27"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="721.92,-313.73 731.17,-308.57 720.72,-306.84 721.92,-313.73"/>
+</g>
+<!-- practice01__app__token_cache -->
+<g id="node22" class="node">
+<title>practice01__app__token_cache</title>
+<g id="a_node22"><a xlink:title="practice01.app.token_cache&#10;D:&#10;anzeguitrae111practice01app.py:34&#10;name in practice01.app">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="964.77" cy="-211" rx="56.98" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="964.77" y="-205.95" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">token_cache</text>
+</a>
+</g>
+</g>
+<!-- practice01__app&#45;&gt;practice01__app__token_cache -->
+<g id="edge20" class="edge">
+<title>practice01__app&#45;&gt;practice01__app__token_cache</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M320.95,-435.96C290.74,-432.55 253.33,-428.63 219.77,-426 211.01,-425.31 67.82,-424.37 61.77,-418 39.03,-394.08 38.71,-293.11 61.77,-269.5 68.31,-262.8 389.42,-262.02 398.77,-261.5 580.79,-251.39 795,-230.08 900.05,-219.01"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="900.31,-222.5 909.89,-217.97 899.58,-215.54 900.31,-222.5"/>
+</g>
+<!-- practice01__app__uploaded_file -->
+<g id="node23" class="node">
+<title>practice01__app__uploaded_file</title>
+<g id="a_node23"><a xlink:title="practice01.app.uploaded_file&#10;D:&#10;anzeguitrae111practice01app.py:371&#10;function in practice01.app">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="874.77" cy="-367.5" rx="61.59" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="874.77" y="-362.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">uploaded_file</text>
+</a>
+</g>
+</g>
+<!-- practice01__app&#45;&gt;practice01__app__uploaded_file -->
+<g id="edge21" class="edge">
+<title>practice01__app&#45;&gt;practice01__app__uploaded_file</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M445.06,-443.46C547.12,-443.45 739.41,-440.32 803.77,-418 819.99,-412.37 835.88,-401.91 848.49,-392.04"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="850.36,-395.04 855.89,-386 845.93,-389.62 850.36,-395.04"/>
+</g>
+<!-- practice01__app__user_login -->
+<g id="node24" class="node">
+<title>practice01__app__user_login</title>
+<g id="a_node24"><a xlink:title="practice01.app.user_login&#10;D:&#10;anzeguitrae111practice01app.py:190&#10;function in practice01.app">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="1388.77" cy="-367.5" rx="49.82" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="1388.77" y="-362.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">user_login</text>
+</a>
+</g>
+</g>
+<!-- practice01__app&#45;&gt;practice01__app__user_login -->
+<g id="edge22" class="edge">
+<title>practice01__app&#45;&gt;practice01__app__user_login</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M445.12,-442.46C653.12,-440.59 1288.52,-433.63 1329.77,-418 1343.64,-412.74 1356.57,-402.75 1366.77,-393.11"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="1369,-395.83 1373.58,-386.28 1364.04,-390.88 1369,-395.83"/>
+</g>
+<!-- practice01__app__user_logout -->
+<g id="node25" class="node">
+<title>practice01__app__user_logout</title>
+<g id="a_node25"><a xlink:title="practice01.app.user_logout&#10;D:&#10;anzeguitrae111practice01app.py:227&#10;function in practice01.app">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="1008.77" cy="-367.5" rx="54.42" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="1008.77" y="-362.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">user_logout</text>
+</a>
+</g>
+</g>
+<!-- practice01__app&#45;&gt;practice01__app__user_logout -->
+<g id="edge23" class="edge">
+<title>practice01__app&#45;&gt;practice01__app__user_logout</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M445.15,-442.36C584.12,-440.67 899.95,-434.99 945.77,-418 960.38,-412.58 974.27,-402.42 985.27,-392.71"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="987.39,-395.53 992.33,-386.15 982.62,-390.4 987.39,-395.53"/>
+</g>
+<!-- practice01__app__user_register -->
+<g id="node26" class="node">
+<title>practice01__app__user_register</title>
+<g id="a_node26"><a xlink:title="practice01.app.user_register&#10;D:&#10;anzeguitrae111practice01app.py:158&#10;function in practice01.app">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="621.77" cy="-367.5" rx="58.52" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="621.77" y="-362.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">user_register</text>
+</a>
+</g>
+</g>
+<!-- practice01__app&#45;&gt;practice01__app__user_register -->
+<g id="edge24" class="edge">
+<title>practice01__app&#45;&gt;practice01__app__user_register</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M444.53,-441.14C478.14,-438.35 519.28,-432.02 553.77,-418 568.86,-411.87 583.71,-401.68 595.67,-392.13"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="597.59,-395.09 603.04,-386.01 593.11,-389.71 597.59,-395.09"/>
+</g>
+<!-- practice01__llm_client -->
+<g id="node3" class="node">
+<title>practice01__llm_client</title>
+<g id="a_node3"><a xlink:title="practice01.llm_client&#10;D:&#10;anzeguitrae111practice01&#10;lm_client.py">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="2008.77" cy="-444" rx="89.74" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="2008.77" y="-438.95" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">practice01.llm_client</text>
+</a>
+</g>
+</g>
+<!-- practice01__llm_client__call_llm_api -->
+<g id="node34" class="node">
+<title>practice01__llm_client__call_llm_api</title>
+<g id="a_node34"><a xlink:title="practice01.llm_client.call_llm_api&#10;D:&#10;anzeguitrae111practice01&#10;lm_client.py:51&#10;function in practice01.llm_client">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="1846.77" cy="-295.5" rx="57.49" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="1846.77" y="-290.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">call_llm_api</text>
+</a>
+</g>
+</g>
+<!-- practice01__llm_client&#45;&gt;practice01__llm_client__call_llm_api -->
+<g id="edge61" class="edge">
+<title>practice01__llm_client&#45;&gt;practice01__llm_client__call_llm_api</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M1971.37,-427.21C1966.28,-424.44 1961.26,-421.36 1956.77,-418 1919.82,-390.4 1885.56,-349.04 1865.4,-322.41"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="1868.31,-320.46 1859.53,-314.53 1862.7,-324.64 1868.31,-320.46"/>
+</g>
+<!-- practice01__llm_client__load_env_file -->
+<g id="node35" class="node">
+<title>practice01__llm_client__load_env_file</title>
+<g id="a_node35"><a xlink:title="practice01.llm_client.load_env_file&#10;D:&#10;anzeguitrae111practice01&#10;lm_client.py:15&#10;function in practice01.llm_client">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="1983.77" cy="-295.5" rx="61.59" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="1983.77" y="-290.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">load_env_file</text>
+</a>
+</g>
+</g>
+<!-- practice01__llm_client&#45;&gt;practice01__llm_client__load_env_file -->
+<g id="edge62" class="edge">
+<title>practice01__llm_client&#45;&gt;practice01__llm_client__load_env_file</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M1977.04,-427.02C1974.15,-424.38 1971.62,-421.39 1969.77,-418 1953.89,-388.95 1962.54,-350.21 1971.74,-324.37"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="1974.93,-325.82 1975.24,-315.23 1968.4,-323.31 1974.93,-325.82"/>
+</g>
+<!-- practice01__llm_client__main -->
+<g id="node36" class="node">
+<title>practice01__llm_client__main</title>
+<g id="a_node36"><a xlink:title="practice01.llm_client.main&#10;D:&#10;anzeguitrae111practice01&#10;lm_client.py:202&#10;function in practice01.llm_client">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="2008.77" cy="-367.5" rx="29.86" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="2008.77" y="-362.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">main</text>
+</a>
+</g>
+</g>
+<!-- practice01__llm_client&#45;&gt;practice01__llm_client__main -->
+<g id="edge63" class="edge">
+<title>practice01__llm_client&#45;&gt;practice01__llm_client__main</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M2002.97,-425.72C2002.06,-417.1 2001.8,-406.46 2002.2,-396.7"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="2005.68,-397.16 2002.9,-386.94 1998.69,-396.66 2005.68,-397.16"/>
+</g>
+<!-- practice01__llm_client&#45;&gt;practice01__llm_client__main -->
+<g id="edge64" class="edge">
+<title>practice01__llm_client&#45;&gt;practice01__llm_client__main</title>
+<path fill="none" stroke="#000000" d="M2014.57,-425.72C2015.48,-417.1 2015.73,-406.46 2015.34,-396.7"/>
+<polygon fill="#000000" stroke="#000000" points="2018.85,-396.66 2014.64,-386.94 2011.86,-397.16 2018.85,-396.66"/>
+</g>
+<!-- practice01__llm_client__print_result -->
+<g id="node37" class="node">
+<title>practice01__llm_client__print_result</title>
+<g id="a_node37"><a xlink:title="practice01.llm_client.print_result&#10;D:&#10;anzeguitrae111practice01&#10;lm_client.py:172&#10;function in practice01.llm_client">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="2116.77" cy="-295.5" rx="53.4" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="2116.77" y="-290.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">print_result</text>
+</a>
+</g>
+</g>
+<!-- practice01__llm_client&#45;&gt;practice01__llm_client__print_result -->
+<g id="edge65" class="edge">
+<title>practice01__llm_client&#45;&gt;practice01__llm_client__print_result</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M2037.71,-426.76C2041.32,-424.09 2044.78,-421.15 2047.77,-418 2074.2,-390.12 2094.33,-350.23 2105.85,-323.87"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="2108.99,-325.44 2109.66,-314.86 2102.54,-322.71 2108.99,-325.44"/>
+</g>
+<!-- practice01__test_api -->
+<g id="node4" class="node">
+<title>practice01__test_api</title>
+<g id="a_node4"><a xlink:title="practice01.test_api&#10;D:&#10;anzeguitrae111practice01test_api.py">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="3217.77" cy="-444" rx="80.52" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="3217.77" y="-438.95" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">practice01.test_api</text>
+</a>
+</g>
+</g>
+<!-- practice01__test_api__run_tests -->
+<g id="node38" class="node">
+<title>practice01__test_api__run_tests</title>
+<g id="a_node38"><a xlink:title="practice01.test_api.run_tests&#10;D:&#10;anzeguitrae111practice01test_api.py:140&#10;function in practice01.test_api">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="3154.77" cy="-367.5" rx="44.19" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="3154.77" y="-362.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">run_tests</text>
+</a>
+</g>
+</g>
+<!-- practice01__test_api&#45;&gt;practice01__test_api__run_tests -->
+<g id="edge69" class="edge">
+<title>practice01__test_api&#45;&gt;practice01__test_api__run_tests</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M3197.71,-426.09C3188.87,-416.83 3178.74,-405.13 3170.45,-394.71"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="3173.24,-392.59 3164.37,-386.8 3167.69,-396.86 3173.24,-392.59"/>
+</g>
+<!-- practice01__test_api&#45;&gt;practice01__test_api__run_tests -->
+<g id="edge70" class="edge">
+<title>practice01__test_api&#45;&gt;practice01__test_api__run_tests</title>
+<path fill="none" stroke="#000000" d="M3208.96,-425.72C3201.63,-415.82 3191.17,-403.24 3181.33,-392.4"/>
+<polygon fill="#000000" stroke="#000000" points="3184.05,-390.19 3174.67,-385.27 3178.94,-394.97 3184.05,-390.19"/>
+</g>
+<!-- practice01__test_api__test_case -->
+<g id="node39" class="node">
+<title>practice01__test_api__test_case</title>
+<g id="a_node39"><a xlink:title="practice01.test_api.test_case&#10;D:&#10;anzeguitrae111practice01test_api.py:18&#10;function in practice01.test_api">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="3244.77" cy="-211" rx="44.19" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="3244.77" y="-205.95" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">test_case</text>
+</a>
+</g>
+</g>
+<!-- practice01__test_api&#45;&gt;practice01__test_api__test_case -->
+<g id="edge71" class="edge">
+<title>practice01__test_api&#45;&gt;practice01__test_api__test_case</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M3298.18,-442.06C3367.66,-440.02 3470.38,-434.19 3558.77,-418 3724.58,-387.64 4021.77,-393.67 3907.77,-269.5 3866.79,-224.87 3452.78,-214.82 3300.5,-212.61"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="3300.7,-209.11 3290.65,-212.47 3300.6,-216.11 3300.7,-209.11"/>
+</g>
+<!-- practice01__test_api&#45;&gt;practice01__test_api__test_case -->
+<g id="edge72" class="edge">
+<title>practice01__test_api&#45;&gt;practice01__test_api__test_case</title>
+<path fill="none" stroke="#000000" d="M3298.33,-442.42C3371.66,-440.76 3482.39,-435.28 3576.77,-418 3742.58,-387.64 4039.77,-393.67 3925.77,-269.5 3884.05,-224.06 3455.68,-214.47 3300.45,-212.5"/>
+<polygon fill="#000000" stroke="#000000" points="3300.88,-209 3290.84,-212.38 3300.79,-216 3300.88,-209"/>
+</g>
+<!-- practice01__test_api__test_fruit_detect -->
+<g id="node40" class="node">
+<title>practice01__test_api__test_fruit_detect</title>
+<g id="a_node40"><a xlink:title="practice01.test_api.test_fruit_detect&#10;D:&#10;anzeguitrae111practice01test_api.py:72&#10;function in practice01.test_api">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="3660.77" cy="-295.5" rx="70.8" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="3660.77" y="-290.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">test_fruit_detect</text>
+</a>
+</g>
+</g>
+<!-- practice01__test_api&#45;&gt;practice01__test_api__test_fruit_detect -->
+<g id="edge73" class="edge">
+<title>practice01__test_api&#45;&gt;practice01__test_api__test_fruit_detect</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M3280.9,-432.51C3300.86,-428.62 3322.89,-423.74 3342.77,-418 3442.93,-389.07 3556.06,-342.32 3616.71,-316.04"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="3617.9,-319.34 3625.67,-312.14 3615.1,-312.92 3617.9,-319.34"/>
+</g>
+<!-- practice01__test_api__test_invalid_token -->
+<g id="node41" class="node">
+<title>practice01__test_api__test_invalid_token</title>
+<g id="a_node41"><a xlink:title="practice01.test_api.test_invalid_token&#10;D:&#10;anzeguitrae111practice01test_api.py:133&#10;function in practice01.test_api">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="3828.77" cy="-295.5" rx="78.99" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="3828.77" y="-290.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">test_invalid_token</text>
+</a>
+</g>
+</g>
+<!-- practice01__test_api&#45;&gt;practice01__test_api__test_invalid_token -->
+<g id="edge74" class="edge">
+<title>practice01__test_api&#45;&gt;practice01__test_api__test_invalid_token</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M3294.64,-438.18C3338.39,-434.51 3394.02,-428.28 3442.77,-418 3566.19,-391.98 3706.34,-342.7 3779.06,-315.58"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="3780.16,-318.9 3788.3,-312.12 3777.71,-312.35 3780.16,-318.9"/>
+</g>
+<!-- practice01__test_api__test_login -->
+<g id="node42" class="node">
+<title>practice01__test_api__test_login</title>
+<g id="a_node42"><a xlink:title="practice01.test_api.test_login&#10;D:&#10;anzeguitrae111practice01test_api.py:52&#10;function in practice01.test_api">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="3154.77" cy="-295.5" rx="47.26" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="3154.77" y="-290.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">test_login</text>
+</a>
+</g>
+</g>
+<!-- practice01__test_api&#45;&gt;practice01__test_api__test_login -->
+<g id="edge75" class="edge">
+<title>practice01__test_api&#45;&gt;practice01__test_api__test_login</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M3219.26,-425.52C3220.19,-406 3219.46,-373.95 3207.77,-349.5 3202.37,-338.2 3193.54,-327.91 3184.62,-319.46"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="3187.09,-316.97 3177.28,-312.96 3182.44,-322.21 3187.09,-316.97"/>
+</g>
+<!-- practice01__test_api__test_login_wrong_password -->
+<g id="node43" class="node">
+<title>practice01__test_api__test_login_wrong_password</title>
+<g id="a_node43"><a xlink:title="practice01.test_api.test_login_wrong_password&#10;D:&#10;anzeguitrae111practice01test_api.py:63&#10;function in practice01.test_api">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="3334.77" cy="-295.5" rx="114.82" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="3334.77" y="-290.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">test_login_wrong_password</text>
+</a>
+</g>
+</g>
+<!-- practice01__test_api&#45;&gt;practice01__test_api__test_login_wrong_password -->
+<g id="edge76" class="edge">
+<title>practice01__test_api&#45;&gt;practice01__test_api__test_login_wrong_password</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M3231.42,-425.91C3251.76,-400.44 3290.19,-352.32 3314.02,-322.48"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="3316.76,-324.66 3320.26,-314.67 3311.29,-320.3 3316.76,-324.66"/>
+</g>
+<!-- practice01__test_api__test_logout -->
+<g id="node44" class="node">
+<title>practice01__test_api__test_logout</title>
+<g id="a_node44"><a xlink:title="practice01.test_api.test_logout&#10;D:&#10;anzeguitrae111practice01test_api.py:117&#10;function in practice01.test_api">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="3519.77" cy="-295.5" rx="51.86" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="3519.77" y="-290.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">test_logout</text>
+</a>
+</g>
+</g>
+<!-- practice01__test_api&#45;&gt;practice01__test_api__test_logout -->
+<g id="edge77" class="edge">
+<title>practice01__test_api&#45;&gt;practice01__test_api__test_logout</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M3250.79,-427.15C3257.09,-424.12 3263.64,-420.96 3269.77,-418 3344.25,-382 3431.08,-339.73 3480.32,-315.73"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="3481.72,-318.95 3489.18,-311.42 3478.65,-312.65 3481.72,-318.95"/>
+</g>
+<!-- practice01__test_api__test_record_delete -->
+<g id="node45" class="node">
+<title>practice01__test_api__test_record_delete</title>
+<g id="a_node45"><a xlink:title="practice01.test_api.test_record_delete&#10;D:&#10;anzeguitrae111practice01test_api.py:100&#10;function in practice01.test_api">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="2727.77" cy="-295.5" rx="78.48" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="2727.77" y="-290.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">test_record_delete</text>
+</a>
+</g>
+</g>
+<!-- practice01__test_api&#45;&gt;practice01__test_api__test_record_delete -->
+<g id="edge78" class="edge">
+<title>practice01__test_api&#45;&gt;practice01__test_api__test_record_delete</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M3139.36,-439.55C3071.27,-435.88 2978.18,-429.05 2942.77,-418 2872.25,-395.99 2799.27,-348.57 2759.08,-319.92"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="2761.21,-317.14 2751.05,-314.12 2757.11,-322.81 2761.21,-317.14"/>
+</g>
+<!-- practice01__test_api__test_record_list -->
+<g id="node46" class="node">
+<title>practice01__test_api__test_record_list</title>
+<g id="a_node46"><a xlink:title="practice01.test_api.test_record_list&#10;D:&#10;anzeguitrae111practice01test_api.py:90&#10;function in practice01.test_api">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="2891.77" cy="-295.5" rx="67.73" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="2891.77" y="-290.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">test_record_list</text>
+</a>
+</g>
+</g>
+<!-- practice01__test_api&#45;&gt;practice01__test_api__test_record_list -->
+<g id="edge79" class="edge">
+<title>practice01__test_api&#45;&gt;practice01__test_api__test_record_list</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M3138.89,-439.87C3109.38,-436.54 3076.16,-430.13 3047.77,-418 2994.33,-395.16 2943.35,-349.4 2914.94,-321.02"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="2917.78,-318.91 2908.27,-314.24 2912.79,-323.82 2917.78,-318.91"/>
+</g>
+<!-- practice01__test_api__test_register -->
+<g id="node47" class="node">
+<title>practice01__test_api__test_register</title>
+<g id="a_node47"><a xlink:title="practice01.test_api.test_register&#10;D:&#10;anzeguitrae111practice01test_api.py:37&#10;function in practice01.test_api">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="3033.77" cy="-295.5" rx="55.96" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="3033.77" y="-290.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">test_register</text>
+</a>
+</g>
+</g>
+<!-- practice01__test_api&#45;&gt;practice01__test_api__test_register -->
+<g id="edge80" class="edge">
+<title>practice01__test_api&#45;&gt;practice01__test_api__test_register</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M3143.53,-436.72C3128.69,-432.89 3113.95,-427 3101.77,-418 3070.33,-394.77 3051.48,-352.4 3041.85,-324.35"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="3045.27,-323.53 3038.86,-315.09 3038.61,-325.69 3045.27,-323.53"/>
+</g>
+<!-- practice01__test_api__test_register_duplicate -->
+<g id="node48" class="node">
+<title>practice01__test_api__test_register_duplicate</title>
+<g id="a_node48"><a xlink:title="practice01.test_api.test_register_duplicate&#10;D:&#10;anzeguitrae111practice01test_api.py:44&#10;function in practice01.test_api">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="2287.77" cy="-295.5" rx="94.34" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="2287.77" y="-290.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">test_register_duplicate</text>
+</a>
+</g>
+</g>
+<!-- practice01__test_api&#45;&gt;practice01__test_api__test_register_duplicate -->
+<g id="edge81" class="edge">
+<title>practice01__test_api&#45;&gt;practice01__test_api__test_register_duplicate</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M3136.95,-442.73C2996.86,-441.75 2714.64,-437.36 2617.77,-418 2511.09,-396.68 2393.04,-346.18 2331.13,-317.44"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="2332.87,-314.39 2322.33,-313.33 2329.91,-320.73 2332.87,-314.39"/>
+</g>
+<!-- practice01__test_api__test_register_empty_params -->
+<g id="node49" class="node">
+<title>practice01__test_api__test_register_empty_params</title>
+<g id="a_node49"><a xlink:title="practice01.test_api.test_register_empty_params&#10;D:&#10;anzeguitrae111practice01test_api.py:126&#10;function in practice01.test_api">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="2515.77" cy="-295.5" rx="115.84" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="2515.77" y="-290.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">test_register_empty_params</text>
+</a>
+</g>
+</g>
+<!-- practice01__test_api&#45;&gt;practice01__test_api__test_register_empty_params -->
+<g id="edge82" class="edge">
+<title>practice01__test_api&#45;&gt;practice01__test_api__test_register_empty_params</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M3137.69,-441.43C3035.17,-438.85 2863.4,-432.49 2801.77,-418 2709.51,-396.31 2609.19,-347.17 2555.32,-318.47"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="2557.3,-315.56 2546.83,-313.91 2553.98,-321.73 2557.3,-315.56"/>
+</g>
+<!-- practice01__app__MockYOLOModel__predict -->
+<g id="node27" class="node">
+<title>practice01__app__MockYOLOModel__predict</title>
+<g id="a_node27"><a xlink:title="practice01.app.MockYOLOModel.predict&#10;D:&#10;anzeguitrae111practice01app.py:125&#10;method in practice01.app.MockYOLOModel">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="1225.77" cy="-126.5" rx="36.51" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="1225.77" y="-121.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">predict</text>
+</a>
+</g>
+</g>
+<!-- practice01__app__MockYOLOModel&#45;&gt;practice01__app__MockYOLOModel__predict -->
+<g id="edge25" class="edge">
+<title>practice01__app__MockYOLOModel&#45;&gt;practice01__app__MockYOLOModel__predict</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M382.37,-203.21C565.47,-186.78 1028.66,-145.19 1178.33,-131.76"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="1178.64,-135.25 1188.29,-130.86 1178.01,-128.27 1178.64,-135.25"/>
+</g>
+<!-- practice01__app__Record__img_url -->
+<g id="node28" class="node">
+<title>practice01__app__Record__img_url</title>
+<g id="a_node28"><a xlink:title="practice01.app.Record.img_url&#10;D:&#10;anzeguitrae111practice01app.py:58&#10;name in practice01.app.Record">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="1595.77" cy="-211" rx="40.6" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="1595.77" y="-205.95" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">img_url</text>
+</a>
+</g>
+</g>
+<!-- practice01__app__Record&#45;&gt;practice01__app__Record__img_url -->
+<g id="edge26" class="edge">
+<title>practice01__app__Record&#45;&gt;practice01__app__Record__img_url</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M1425.67,-282.68C1437.71,-277.86 1452.23,-272.67 1465.77,-269.5 1499.27,-261.65 1511.46,-275.76 1542.77,-261.5 1555.23,-255.83 1566.66,-246.04 1575.7,-236.67"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="1578.14,-239.18 1582.26,-229.42 1572.95,-234.48 1578.14,-239.18"/>
+</g>
+<!-- practice01__app__Record__to_dict -->
+<g id="node29" class="node">
+<title>practice01__app__Record__to_dict</title>
+<g id="a_node29"><a xlink:title="practice01.app.Record.to_dict&#10;D:&#10;anzeguitrae111practice01app.py:63&#10;method in practice01.app.Record">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="1690.77" cy="-211" rx="36.51" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="1690.77" y="-205.95" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">to_dict</text>
+</a>
+</g>
+</g>
+<!-- practice01__app__Record&#45;&gt;practice01__app__Record__to_dict -->
+<g id="edge27" class="edge">
+<title>practice01__app__Record&#45;&gt;practice01__app__Record__to_dict</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M1425.26,-282.43C1437.36,-277.5 1452.02,-272.3 1465.77,-269.5 1505,-261.51 1609.52,-278.51 1645.77,-261.5 1656.97,-256.25 1666.64,-246.8 1674.11,-237.55"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="1676.75,-239.86 1679.92,-229.75 1671.14,-235.68 1676.75,-239.86"/>
+</g>
+<!-- practice01__app__Record__user_id -->
+<g id="node30" class="node">
+<title>practice01__app__Record__user_id</title>
+<g id="a_node30"><a xlink:title="practice01.app.Record.user_id&#10;D:&#10;anzeguitrae111practice01app.py:57&#10;name in practice01.app.Record">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="1783.77" cy="-211" rx="38.04" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="1783.77" y="-205.95" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">user_id</text>
+</a>
+</g>
+</g>
+<!-- practice01__app__Record&#45;&gt;practice01__app__Record__user_id -->
+<g id="edge28" class="edge">
+<title>practice01__app__Record&#45;&gt;practice01__app__Record__user_id</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M1425.24,-282.34C1437.33,-277.38 1452,-272.2 1465.77,-269.5 1495.33,-263.71 1709.27,-273.79 1736.77,-261.5 1748.29,-256.35 1758.36,-246.92 1766.19,-237.66"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="1768.92,-239.85 1772.32,-229.81 1763.4,-235.54 1768.92,-239.85"/>
+</g>
+<!-- practice01__app__User__to_dict -->
+<g id="node31" class="node">
+<title>practice01__app__User__to_dict</title>
+<g id="a_node31"><a xlink:title="practice01.app.User.to_dict&#10;D:&#10;anzeguitrae111practice01app.py:46&#10;method in practice01.app.User">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="1882.77" cy="-211" rx="36.51" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="1882.77" y="-205.95" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">to_dict</text>
+</a>
+</g>
+</g>
+<!-- practice01__app__User&#45;&gt;practice01__app__User__to_dict -->
+<g id="edge29" class="edge">
+<title>practice01__app__User&#45;&gt;practice01__app__User__to_dict</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M1529.77,-289.47C1562.01,-283.67 1617.63,-274.32 1665.77,-269.5 1684.36,-267.64 1816.7,-269.1 1833.77,-261.5 1845.66,-256.21 1856.21,-246.62 1864.45,-237.28"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="1867.01,-239.67 1870.64,-229.72 1861.6,-235.23 1867.01,-239.67"/>
+</g>
+<!-- practice01__app__User__user_id -->
+<g id="node32" class="node">
+<title>practice01__app__User__user_id</title>
+<g id="a_node32"><a xlink:title="practice01.app.User.user_id&#10;D:&#10;anzeguitrae111practice01app.py:41&#10;name in practice01.app.User">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="2086.77" cy="-211" rx="38.04" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="2086.77" y="-205.95" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">user_id</text>
+</a>
+</g>
+</g>
+<!-- practice01__app__User&#45;&gt;practice01__app__User__user_id -->
+<g id="edge30" class="edge">
+<title>practice01__app__User&#45;&gt;practice01__app__User__user_id</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M1529.75,-289.25C1561.97,-283.25 1617.57,-273.69 1665.77,-269.5 1686.47,-267.7 2020.76,-269.9 2039.77,-261.5 2051.31,-256.4 2061.38,-246.97 2069.21,-237.71"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="2071.95,-239.89 2075.33,-229.85 2066.43,-235.59 2071.95,-239.89"/>
+</g>
+<!-- practice01__app__User__username -->
+<g id="node33" class="node">
+<title>practice01__app__User__username</title>
+<g id="a_node33"><a xlink:title="practice01.app.User.username&#10;D:&#10;anzeguitrae111practice01app.py:42&#10;name in practice01.app.User">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="1983.77" cy="-211" rx="46.75" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="1983.77" y="-205.95" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">username</text>
+</a>
+</g>
+</g>
+<!-- practice01__app__User&#45;&gt;practice01__app__User__username -->
+<g id="edge31" class="edge">
+<title>practice01__app__User&#45;&gt;practice01__app__User__username</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M1529.76,-289.33C1561.98,-283.39 1617.59,-273.91 1665.77,-269.5 1694.88,-266.83 1901.64,-272.39 1928.77,-261.5 1941.86,-256.25 1953.85,-246.39 1963.26,-236.85"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="1965.58,-239.49 1969.81,-229.77 1960.44,-234.73 1965.58,-239.49"/>
+</g>
+<!-- practice01__app__check_token&#45;&gt;practice01__app__token_cache -->
+<g id="edge32" class="edge">
+<title>practice01__app__check_token&#45;&gt;practice01__app__token_cache</title>
+<path fill="none" stroke="#000000" d="M1085.62,-279.37C1062.12,-266.27 1027.91,-247.2 1001.88,-232.69"/>
+<polygon fill="#000000" stroke="#000000" points="1003.75,-229.72 993.31,-227.91 1000.35,-235.84 1003.75,-229.72"/>
+</g>
+<!-- practice01__app__del_cache_token&#45;&gt;practice01__app__token_cache -->
+<g id="edge33" class="edge">
+<title>practice01__app__del_cache_token&#45;&gt;practice01__app__token_cache</title>
+<path fill="none" stroke="#000000" d="M964.77,-277C964.77,-266.5 964.77,-252.89 964.77,-240.83"/>
+<polygon fill="#000000" stroke="#000000" points="968.27,-240.98 964.77,-230.98 961.27,-240.98 968.27,-240.98"/>
+</g>
+<!-- practice01__app__fruit_detect&#45;&gt;practice01__app__Record -->
+<g id="edge35" class="edge">
+<title>practice01__app__fruit_detect&#45;&gt;practice01__app__Record</title>
+<path fill="none" stroke="#000000" d="M530.18,-354.55C537.92,-352.55 546.05,-350.72 553.77,-349.5 895.66,-295.4 989.37,-364.33 1331.77,-313.5 1339.76,-312.31 1348.17,-310.58 1356.24,-308.66"/>
+<polygon fill="#000000" stroke="#000000" points="1357.03,-312.07 1365.87,-306.24 1355.32,-305.28 1357.03,-312.07"/>
+</g>
+<!-- practice01__app__fruit_detect&#45;&gt;practice01__app__base64_to_image -->
+<g id="edge36" class="edge">
+<title>practice01__app__fruit_detect&#45;&gt;practice01__app__base64_to_image</title>
+<path fill="none" stroke="#000000" d="M453.59,-354.54C447.33,-352.74 440.89,-350.99 434.77,-349.5 352.12,-329.32 330.26,-329.84 246.77,-313.5 241.19,-312.41 235.41,-311.27 229.6,-310.12"/>
+<polygon fill="#000000" stroke="#000000" points="230.43,-306.71 219.94,-308.2 229.06,-313.58 230.43,-306.71"/>
+</g>
+<!-- practice01__app__fruit_detect&#45;&gt;practice01__app__check_token -->
+<g id="edge37" class="edge">
+<title>practice01__app__fruit_detect&#45;&gt;practice01__app__check_token</title>
+<path fill="none" stroke="#000000" d="M530.2,-354.71C537.94,-352.69 546.07,-350.82 553.77,-349.5 770.29,-312.28 829.97,-349.04 1046.77,-313.5 1051.18,-312.78 1055.72,-311.9 1060.26,-310.93"/>
+<polygon fill="#000000" stroke="#000000" points="1061.03,-314.34 1069.99,-308.69 1059.46,-307.52 1061.03,-314.34"/>
+</g>
+<!-- practice01__app__fruit_detect&#45;&gt;practice01__app__draw_box -->
+<g id="edge38" class="edge">
+<title>practice01__app__fruit_detect&#45;&gt;practice01__app__draw_box</title>
+<path fill="none" stroke="#000000" d="M456.85,-353.5C426.03,-342.02 380.97,-325.25 347.71,-312.86"/>
+<polygon fill="#000000" stroke="#000000" points="348.94,-309.58 338.34,-309.37 346.49,-316.14 348.94,-309.58"/>
+</g>
+<!-- practice01__app__fruit_detect&#45;&gt;practice01__app__load_yolo_model -->
+<g id="edge39" class="edge">
+<title>practice01__app__fruit_detect&#45;&gt;practice01__app__load_yolo_model</title>
+<path fill="none" stroke="#000000" d="M480.63,-349.55C475.46,-341.68 469.17,-332.12 463.38,-323.29"/>
+<polygon fill="#000000" stroke="#000000" points="466.37,-321.48 457.95,-315.04 460.52,-325.32 466.37,-321.48"/>
+</g>
+<!-- practice01__app__fruit_detect&#45;&gt;practice01__app__parse_yolo_result -->
+<g id="edge40" class="edge">
+<title>practice01__app__fruit_detect&#45;&gt;practice01__app__parse_yolo_result</title>
+<path fill="none" stroke="#000000" d="M518.37,-351.48C535.62,-341.74 558.37,-328.9 577.55,-318.08"/>
+<polygon fill="#000000" stroke="#000000" points="579.18,-321.17 586.17,-313.21 575.74,-315.08 579.18,-321.17"/>
+</g>
+<!-- practice01__app__fruit_detect&#45;&gt;practice01__app__save_server_image -->
+<g id="edge41" class="edge">
+<title>practice01__app__fruit_detect&#45;&gt;practice01__app__save_server_image</title>
+<path fill="none" stroke="#000000" d="M531.72,-355.24C539.04,-353.26 546.62,-351.28 553.77,-349.5 610.44,-335.43 675.14,-321.13 722.76,-310.94"/>
+<polygon fill="#000000" stroke="#000000" points="723.34,-314.4 732.39,-308.89 721.88,-307.55 723.34,-314.4"/>
+</g>
+<!-- practice01__app__fruit_detect&#45;&gt;practice01__app__MockYOLOModel__predict -->
+<g id="edge34" class="edge">
+<title>practice01__app__fruit_detect&#45;&gt;practice01__app__MockYOLOModel__predict</title>
+<path fill="none" stroke="#000000" d="M529.84,-354.58C537.68,-352.54 545.94,-350.7 553.77,-349.5 987.22,-283.08 1103.89,-361.49 1539.77,-313.5 1646.69,-301.73 1670.76,-280.51 1777.77,-269.5 1787.69,-268.48 2129.8,-268.63 2136.77,-261.5 2160.54,-237.19 2160.04,-209.79 2136.77,-185 2106.98,-153.27 1457.5,-133.66 1273.79,-128.73"/>
+<polygon fill="#000000" stroke="#000000" points="1273.97,-125.23 1263.88,-128.47 1273.79,-132.23 1273.97,-125.23"/>
+</g>
+<!-- practice01__app__generate_token&#45;&gt;practice01__app__md5 -->
+<g id="edge42" class="edge">
+<title>practice01__app__generate_token&#45;&gt;practice01__app__md5</title>
+<path fill="none" stroke="#000000" d="M1264.68,-277.41C1270.52,-266.2 1278.28,-251.31 1284.92,-238.58"/>
+<polygon fill="#000000" stroke="#000000" points="1287.95,-240.34 1289.46,-229.85 1281.74,-237.1 1287.95,-240.34"/>
+</g>
+<!-- practice01__app__load_yolo_model&#45;&gt;practice01__app__MockYOLOModel -->
+<g id="edge43" class="edge">
+<title>practice01__app__load_yolo_model&#45;&gt;practice01__app__MockYOLOModel</title>
+<path fill="none" stroke="#000000" d="M418.64,-278.4C397.35,-265.76 367.47,-248.03 343.95,-234.07"/>
+<polygon fill="#000000" stroke="#000000" points="345.99,-231.21 335.61,-229.12 342.42,-237.23 345.99,-231.21"/>
+</g>
+<!-- practice01__app__md5&#45;&gt;practice01__app__md5 -->
+<g id="edge44" class="edge">
+<title>practice01__app__md5&#45;&gt;practice01__app__md5</title>
+<path fill="none" stroke="#000000" d="M1317.11,-224.97C1330.79,-229.85 1344.58,-225.19 1344.58,-211 1344.58,-200.8 1337.46,-195.52 1328.37,-195.17"/>
+<polygon fill="#000000" stroke="#000000" points="1327.91,-191.7 1318.61,-196.78 1329.04,-198.61 1327.91,-191.7"/>
+</g>
+<!-- practice01__app__record_delete&#45;&gt;practice01__app__Record -->
+<g id="edge45" class="edge">
+<title>practice01__app__record_delete&#45;&gt;practice01__app__Record</title>
+<path fill="none" stroke="#000000" d="M1187.28,-355.09C1238.11,-342.28 1317.13,-322.17 1346.77,-313.5 1350.32,-312.46 1354,-311.34 1357.69,-310.2"/>
+<polygon fill="#000000" stroke="#000000" points="1358.71,-313.54 1367.18,-307.17 1356.59,-306.87 1358.71,-313.54"/>
+</g>
+<!-- practice01__app__record_delete&#45;&gt;practice01__app__check_token -->
+<g id="edge47" class="edge">
+<title>practice01__app__record_delete&#45;&gt;practice01__app__check_token</title>
+<path fill="none" stroke="#000000" d="M1134.6,-349.2C1131.48,-341.65 1127.73,-332.62 1124.24,-324.18"/>
+<polygon fill="#000000" stroke="#000000" points="1127.5,-322.9 1120.43,-315 1121.03,-325.58 1127.5,-322.9"/>
+</g>
+<!-- practice01__app__record_delete&#45;&gt;practice01__app__Record__img_url -->
+<g id="edge46" class="edge">
+<title>practice01__app__record_delete&#45;&gt;practice01__app__Record__img_url</title>
+<path fill="none" stroke="#000000" d="M1186.02,-354.84C1194.53,-352.86 1203.39,-350.97 1211.77,-349.5 1283.99,-336.82 1478.76,-354.17 1539.77,-313.5 1565.24,-296.52 1580.21,-263.88 1588.17,-240.19"/>
+<polygon fill="#000000" stroke="#000000" points="1591.45,-241.42 1591.08,-230.83 1584.77,-239.34 1591.45,-241.42"/>
+</g>
+<!-- practice01__app__record_list&#45;&gt;practice01__app__Record -->
+<g id="edge48" class="edge">
+<title>practice01__app__record_list&#45;&gt;practice01__app__Record</title>
+<path fill="none" stroke="#000000" d="M1297.6,-351.83C1317.13,-341.15 1343.73,-326.6 1364.75,-315.1"/>
+<polygon fill="#000000" stroke="#000000" points="1366.14,-318.33 1373.24,-310.46 1362.78,-312.19 1366.14,-318.33"/>
+</g>
+<!-- practice01__app__record_list&#45;&gt;practice01__app__check_token -->
+<g id="edge51" class="edge">
+<title>practice01__app__record_list&#45;&gt;practice01__app__check_token</title>
+<path fill="none" stroke="#000000" d="M1239.93,-352.84C1215.75,-342.12 1181.83,-327.1 1155.11,-315.26"/>
+<polygon fill="#000000" stroke="#000000" points="1156.83,-312.19 1146.27,-311.34 1154,-318.59 1156.83,-312.19"/>
+</g>
+<!-- practice01__app__record_list&#45;&gt;practice01__app__Record__to_dict -->
+<g id="edge49" class="edge">
+<title>practice01__app__record_list&#45;&gt;practice01__app__Record__to_dict</title>
+<path fill="none" stroke="#000000" d="M1308.03,-354.93C1315.2,-352.94 1322.68,-351.03 1329.77,-349.5 1438.65,-326.03 1475.12,-356.72 1577.77,-313.5 1616.78,-297.08 1651.29,-261.35 1671.61,-236.98"/>
+<polygon fill="#000000" stroke="#000000" points="1674.15,-239.41 1677.73,-229.44 1668.71,-235 1674.15,-239.41"/>
+</g>
+<!-- practice01__app__record_list&#45;&gt;practice01__app__User__to_dict -->
+<g id="edge50" class="edge">
+<title>practice01__app__record_list&#45;&gt;practice01__app__User__to_dict</title>
+<path fill="none" stroke="#000000" d="M1307.69,-354.92C1314.96,-352.91 1322.57,-350.99 1329.77,-349.5 1453.94,-323.87 1489.46,-343.03 1612.77,-313.5 1669.23,-299.98 1679.02,-281.74 1735.77,-269.5 1757.13,-264.89 1813.96,-270.73 1833.77,-261.5 1845.56,-256.01 1856.1,-246.38 1864.35,-237.08"/>
+<polygon fill="#000000" stroke="#000000" points="1866.89,-239.5 1870.57,-229.56 1861.5,-235.04 1866.89,-239.5"/>
+</g>
+<!-- practice01__app__user_login&#45;&gt;practice01__app__User -->
+<g id="edge53" class="edge">
+<title>practice01__app__user_login&#45;&gt;practice01__app__User</title>
+<path fill="none" stroke="#000000" d="M1413.23,-351.48C1430.78,-340.7 1454.53,-326.12 1473.15,-314.68"/>
+<polygon fill="#000000" stroke="#000000" points="1474.92,-317.7 1481.61,-309.49 1471.26,-311.74 1474.92,-317.7"/>
+</g>
+<!-- practice01__app__user_login&#45;&gt;practice01__app__generate_token -->
+<g id="edge56" class="edge">
+<title>practice01__app__user_login&#45;&gt;practice01__app__generate_token</title>
+<path fill="none" stroke="#000000" d="M1361.53,-352.17C1342.46,-342.13 1316.68,-328.56 1295.35,-317.33"/>
+<polygon fill="#000000" stroke="#000000" points="1297.1,-314.3 1286.62,-312.74 1293.84,-320.49 1297.1,-314.3"/>
+</g>
+<!-- practice01__app__user_login&#45;&gt;practice01__app__md5 -->
+<g id="edge57" class="edge">
+<title>practice01__app__user_login&#45;&gt;practice01__app__md5</title>
+<path fill="none" stroke="#000000" d="M1412.68,-351.45C1425.05,-342.19 1438.97,-329.11 1445.77,-313.5 1453.58,-295.57 1456.79,-285.65 1445.77,-269.5 1421.76,-234.32 1372.71,-220.66 1337.89,-215.36"/>
+<polygon fill="#000000" stroke="#000000" points="1338.55,-211.92 1328.18,-214.07 1337.63,-218.86 1338.55,-211.92"/>
+</g>
+<!-- practice01__app__user_login&#45;&gt;practice01__app__Record__user_id -->
+<g id="edge52" class="edge">
+<title>practice01__app__user_login&#45;&gt;practice01__app__Record__user_id</title>
+<path fill="none" stroke="#000000" d="M1425.71,-355.02C1432.98,-353 1440.58,-351.05 1447.77,-349.5 1556.65,-326.03 1598.04,-366.93 1695.77,-313.5 1712.79,-304.19 1744.86,-264.11 1765.23,-237.19"/>
+<polygon fill="#000000" stroke="#000000" points="1767.79,-239.6 1770.99,-229.49 1762.19,-235.4 1767.79,-239.6"/>
+</g>
+<!-- practice01__app__user_login&#45;&gt;practice01__app__User__user_id -->
+<g id="edge54" class="edge">
+<title>practice01__app__user_login&#45;&gt;practice01__app__User__user_id</title>
+<path fill="none" stroke="#000000" d="M1425.36,-354.95C1432.73,-352.91 1440.45,-350.97 1447.77,-349.5 1515.33,-335.91 1699.36,-353.08 1755.77,-313.5 1773.67,-300.94 1759.35,-281.28 1777.77,-269.5 1802.31,-253.81 2013.19,-273.4 2039.77,-261.5 2051.29,-256.34 2061.36,-246.91 2069.19,-237.65"/>
+<polygon fill="#000000" stroke="#000000" points="2071.92,-239.84 2075.31,-229.81 2066.4,-235.54 2071.92,-239.84"/>
+</g>
+<!-- practice01__app__user_login&#45;&gt;practice01__app__User__username -->
+<g id="edge55" class="edge">
+<title>practice01__app__user_login&#45;&gt;practice01__app__User__username</title>
+<path fill="none" stroke="#000000" d="M1425.37,-354.99C1432.74,-352.95 1440.46,-351 1447.77,-349.5 1574.13,-323.56 1625.69,-380.74 1735.77,-313.5 1755.97,-301.16 1745.12,-281.07 1765.77,-269.5 1797.41,-251.77 1895.24,-275.32 1928.77,-261.5 1941.81,-256.12 1953.79,-246.25 1963.21,-236.73"/>
+<polygon fill="#000000" stroke="#000000" points="1965.52,-239.39 1969.77,-229.68 1960.39,-234.62 1965.52,-239.39"/>
+</g>
+<!-- practice01__app__user_logout&#45;&gt;practice01__app__del_cache_token -->
+<g id="edge58" class="edge">
+<title>practice01__app__user_logout&#45;&gt;practice01__app__del_cache_token</title>
+<path fill="none" stroke="#000000" d="M998.12,-349.55C993.17,-341.68 987.16,-332.12 981.61,-323.29"/>
+<polygon fill="#000000" stroke="#000000" points="984.72,-321.66 976.43,-315.06 978.79,-325.39 984.72,-321.66"/>
+</g>
+<!-- practice01__app__user_register&#45;&gt;practice01__app__User -->
+<g id="edge59" class="edge">
+<title>practice01__app__user_register&#45;&gt;practice01__app__User</title>
+<path fill="none" stroke="#000000" d="M663.95,-354.58C672.44,-352.58 681.34,-350.74 689.77,-349.5 1022.56,-300.47 1114.16,-369.98 1445.77,-313.5 1452.92,-312.28 1460.43,-310.45 1467.58,-308.44"/>
+<polygon fill="#000000" stroke="#000000" points="1468.37,-311.86 1476.94,-305.62 1466.35,-305.15 1468.37,-311.86"/>
+</g>
+<!-- practice01__app__user_register&#45;&gt;practice01__app__md5 -->
+<g id="edge60" class="edge">
+<title>practice01__app__user_register&#45;&gt;practice01__app__md5</title>
+<path fill="none" stroke="#000000" d="M663.96,-354.64C672.45,-352.63 681.35,-350.78 689.77,-349.5 760.41,-338.79 1282.68,-365.41 1331.77,-313.5 1351.82,-292.29 1334.71,-258.76 1318.57,-236.1"/>
+<polygon fill="#000000" stroke="#000000" points="1321.54,-234.22 1312.74,-228.33 1315.94,-238.43 1321.54,-234.22"/>
+</g>
+<!-- practice01__llm_client__main&#45;&gt;practice01__llm_client__call_llm_api -->
+<g id="edge66" class="edge">
+<title>practice01__llm_client__main&#45;&gt;practice01__llm_client__call_llm_api</title>
+<path fill="none" stroke="#000000" d="M1986.57,-355.12C1982.66,-353.19 1978.61,-351.25 1974.77,-349.5 1947.7,-337.15 1916.91,-324.36 1892.31,-314.44"/>
+<polygon fill="#000000" stroke="#000000" points="1893.82,-311.27 1883.23,-310.8 1891.21,-317.77 1893.82,-311.27"/>
+</g>
+<!-- practice01__llm_client__main&#45;&gt;practice01__llm_client__load_env_file -->
+<g id="edge67" class="edge">
+<title>practice01__llm_client__main&#45;&gt;practice01__llm_client__load_env_file</title>
+<path fill="none" stroke="#000000" d="M2002.72,-349.55C2000.02,-342.02 1996.78,-332.94 1993.75,-324.44"/>
+<polygon fill="#000000" stroke="#000000" points="1997.11,-323.44 1990.45,-315.2 1990.52,-325.8 1997.11,-323.44"/>
+</g>
+<!-- practice01__llm_client__main&#45;&gt;practice01__llm_client__print_result -->
+<g id="edge68" class="edge">
+<title>practice01__llm_client__main&#45;&gt;practice01__llm_client__print_result</title>
+<path fill="none" stroke="#000000" d="M2028.58,-353.66C2043.89,-343.74 2065.43,-329.77 2083.39,-318.13"/>
+<polygon fill="#000000" stroke="#000000" points="2085.18,-321.14 2091.67,-312.77 2081.37,-315.27 2085.18,-321.14"/>
+</g>
+<!-- practice01__test_api__run_tests&#45;&gt;practice01__test_api__test_fruit_detect -->
+<g id="edge83" class="edge">
+<title>practice01__test_api__run_tests&#45;&gt;practice01__test_api__test_fruit_detect</title>
+<path fill="none" stroke="#000000" d="M3185.69,-354.3C3191.3,-352.45 3197.16,-350.74 3202.77,-349.5 3367.55,-313.06 3413.96,-339.08 3580.77,-313.5 3586.65,-312.6 3592.74,-311.54 3598.83,-310.39"/>
+<polygon fill="#000000" stroke="#000000" points="3599.09,-313.91 3608.23,-308.55 3597.74,-307.04 3599.09,-313.91"/>
+</g>
+<!-- practice01__test_api__run_tests&#45;&gt;practice01__test_api__test_invalid_token -->
+<g id="edge84" class="edge">
+<title>practice01__test_api__run_tests&#45;&gt;practice01__test_api__test_invalid_token</title>
+<path fill="none" stroke="#000000" d="M3185.66,-354.17C3191.28,-352.33 3197.14,-350.66 3202.77,-349.5 3437.47,-301.04 3503.11,-344.29 3740.77,-313.5 3747.47,-312.63 3754.44,-311.57 3761.38,-310.4"/>
+<polygon fill="#000000" stroke="#000000" points="3761.87,-313.87 3771.11,-308.69 3760.66,-306.97 3761.87,-313.87"/>
+</g>
+<!-- practice01__test_api__run_tests&#45;&gt;practice01__test_api__test_login -->
+<g id="edge85" class="edge">
+<title>practice01__test_api__run_tests&#45;&gt;practice01__test_api__test_login</title>
+<path fill="none" stroke="#000000" d="M3154.77,-349.2C3154.77,-341.91 3154.77,-333.23 3154.77,-325.04"/>
+<polygon fill="#000000" stroke="#000000" points="3158.27,-325.12 3154.77,-315.12 3151.27,-325.12 3158.27,-325.12"/>
+</g>
+<!-- practice01__test_api__run_tests&#45;&gt;practice01__test_api__test_login_wrong_password -->
+<g id="edge86" class="edge">
+<title>practice01__test_api__run_tests&#45;&gt;practice01__test_api__test_login_wrong_password</title>
+<path fill="none" stroke="#000000" d="M3185.71,-354.47C3212.35,-344.11 3251.35,-328.94 3282.78,-316.72"/>
+<polygon fill="#000000" stroke="#000000" points="3283.66,-320.13 3291.71,-313.25 3281.12,-313.61 3283.66,-320.13"/>
+</g>
+<!-- practice01__test_api__run_tests&#45;&gt;practice01__test_api__test_logout -->
+<g id="edge87" class="edge">
+<title>practice01__test_api__run_tests&#45;&gt;practice01__test_api__test_logout</title>
+<path fill="none" stroke="#000000" d="M3186,-354.43C3191.53,-352.58 3197.27,-350.85 3202.77,-349.5 3314.37,-322.18 3346.3,-336.97 3458.77,-313.5 3462.6,-312.7 3466.54,-311.8 3470.49,-310.83"/>
+<polygon fill="#000000" stroke="#000000" points="3471.28,-314.24 3480.1,-308.36 3469.54,-307.46 3471.28,-314.24"/>
+</g>
+<!-- practice01__test_api__run_tests&#45;&gt;practice01__test_api__test_record_delete -->
+<g id="edge88" class="edge">
+<title>practice01__test_api__run_tests&#45;&gt;practice01__test_api__test_record_delete</title>
+<path fill="none" stroke="#000000" d="M3123.56,-354.35C3118.03,-352.51 3112.28,-350.8 3106.77,-349.5 2979.5,-319.5 2943.9,-334.05 2814.77,-313.5 2808.69,-312.53 2802.39,-311.45 2796.08,-310.32"/>
+<polygon fill="#000000" stroke="#000000" points="2796.72,-306.88 2786.25,-308.51 2795.45,-313.76 2796.72,-306.88"/>
+</g>
+<!-- practice01__test_api__run_tests&#45;&gt;practice01__test_api__test_record_list -->
+<g id="edge89" class="edge">
+<title>practice01__test_api__run_tests&#45;&gt;practice01__test_api__test_record_list</title>
+<path fill="none" stroke="#000000" d="M3122.9,-354.72C3117.54,-352.88 3112.02,-351.07 3106.77,-349.5 3055.89,-334.26 2997.31,-320.03 2954.16,-310.16"/>
+<polygon fill="#000000" stroke="#000000" points="2954.98,-306.76 2944.45,-307.96 2953.43,-313.59 2954.98,-306.76"/>
+</g>
+<!-- practice01__test_api__run_tests&#45;&gt;practice01__test_api__test_register -->
+<g id="edge90" class="edge">
+<title>practice01__test_api__run_tests&#45;&gt;practice01__test_api__test_register</title>
+<path fill="none" stroke="#000000" d="M3129.99,-352.17C3112.68,-342.15 3089.29,-328.62 3069.91,-317.41"/>
+<polygon fill="#000000" stroke="#000000" points="3071.91,-314.52 3061.5,-312.54 3068.4,-320.58 3071.91,-314.52"/>
+</g>
+<!-- practice01__test_api__run_tests&#45;&gt;practice01__test_api__test_register_duplicate -->
+<g id="edge91" class="edge">
+<title>practice01__test_api__run_tests&#45;&gt;practice01__test_api__test_register_duplicate</title>
+<path fill="none" stroke="#000000" d="M3124.15,-354.18C3118.46,-352.31 3112.49,-350.63 3106.77,-349.5 2794.2,-287.66 2707.57,-347.5 2390.77,-313.5 2382.56,-312.62 2374.02,-311.51 2365.51,-310.29"/>
+<polygon fill="#000000" stroke="#000000" points="2366.29,-306.87 2355.88,-308.85 2365.25,-313.79 2366.29,-306.87"/>
+</g>
+<!-- practice01__test_api__run_tests&#45;&gt;practice01__test_api__test_register_empty_params -->
+<g id="edge92" class="edge">
+<title>practice01__test_api__run_tests&#45;&gt;practice01__test_api__test_register_empty_params</title>
+<path fill="none" stroke="#000000" d="M3123.87,-354.22C3118.25,-352.37 3112.39,-350.69 3106.77,-349.5 2903.55,-306.45 2847.33,-335.51 2640.77,-313.5 2630.77,-312.44 2620.34,-311.21 2609.96,-309.9"/>
+<polygon fill="#000000" stroke="#000000" points="2610.59,-306.46 2600.23,-308.66 2609.7,-313.4 2610.59,-306.46"/>
+</g>
+<!-- practice01__test_api__test_case__decorator -->
+<g id="node50" class="node">
+<title>practice01__test_api__test_case__decorator</title>
+<g id="a_node50"><a xlink:title="practice01.test_api.test_case.decorator&#10;D:&#10;anzeguitrae111practice01test_api.py:20&#10;function in practice01.test_api.test_case">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="3244.77" cy="-126.5" rx="45.72" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="3244.77" y="-121.45" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">decorator</text>
+</a>
+</g>
+</g>
+<!-- practice01__test_api__test_case&#45;&gt;practice01__test_api__test_case__decorator -->
+<g id="edge93" class="edge">
+<title>practice01__test_api__test_case&#45;&gt;practice01__test_api__test_case__decorator</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M3239.18,-192.91C3238.01,-182.25 3237.73,-168.27 3238.32,-155.97"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="3241.78,-156.6 3239.04,-146.37 3234.8,-156.08 3241.78,-156.6"/>
+</g>
+<!-- practice01__test_api__test_case&#45;&gt;practice01__test_api__test_case__decorator -->
+<g id="edge94" class="edge">
+<title>practice01__test_api__test_case&#45;&gt;practice01__test_api__test_case__decorator</title>
+<path fill="none" stroke="#000000" d="M3250.36,-192.91C3251.52,-182.25 3251.81,-168.27 3251.22,-155.97"/>
+<polygon fill="#000000" stroke="#000000" points="3254.74,-156.08 3250.5,-146.37 3247.76,-156.6 3254.74,-156.08"/>
+</g>
+<!-- practice01__test_api__test_fruit_detect&#45;&gt;practice01__test_api__test_case -->
+<g id="edge97" class="edge">
+<title>practice01__test_api__test_fruit_detect&#45;&gt;practice01__test_api__test_case</title>
+<path fill="none" stroke="#000000" d="M3619.54,-280.46C3607.17,-276.56 3593.5,-272.56 3580.77,-269.5 3481.78,-245.67 3364.08,-227.9 3297.54,-218.81"/>
+<polygon fill="#000000" stroke="#000000" points="3298.39,-215.39 3288.01,-217.52 3297.45,-222.33 3298.39,-215.39"/>
+</g>
+<!-- practice01__test_api__test_invalid_token&#45;&gt;practice01__test_api__test_case -->
+<g id="edge98" class="edge">
+<title>practice01__test_api__test_invalid_token&#45;&gt;practice01__test_api__test_case</title>
+<path fill="none" stroke="#000000" d="M3783.89,-280.24C3770.16,-276.29 3754.95,-272.32 3740.77,-269.5 3582.18,-237.99 3391.38,-221.87 3299.5,-215.45"/>
+<polygon fill="#000000" stroke="#000000" points="3299.99,-211.97 3289.77,-214.78 3299.51,-218.95 3299.99,-211.97"/>
+</g>
+<!-- practice01__test_api__test_login&#45;&gt;practice01__test_api__test_case -->
+<g id="edge99" class="edge">
+<title>practice01__test_api__test_login&#45;&gt;practice01__test_api__test_case</title>
+<path fill="none" stroke="#000000" d="M3172.12,-278.59C3185.44,-266.38 3204.04,-249.33 3219.09,-235.54"/>
+<polygon fill="#000000" stroke="#000000" points="3221.35,-238.22 3226.35,-228.88 3216.62,-233.06 3221.35,-238.22"/>
+</g>
+<!-- practice01__test_api__test_login_wrong_password&#45;&gt;practice01__test_api__test_case -->
+<g id="edge100" class="edge">
+<title>practice01__test_api__test_login_wrong_password&#45;&gt;practice01__test_api__test_case</title>
+<path fill="none" stroke="#000000" d="M3316.12,-277.41C3302.86,-265.25 3284.9,-248.78 3270.31,-235.41"/>
+<polygon fill="#000000" stroke="#000000" points="3273.02,-233.15 3263.29,-228.98 3268.29,-238.31 3273.02,-233.15"/>
+</g>
+<!-- practice01__test_api__test_logout&#45;&gt;practice01__test_api__test_case -->
+<g id="edge101" class="edge">
+<title>practice01__test_api__test_logout&#45;&gt;practice01__test_api__test_case</title>
+<path fill="none" stroke="#000000" d="M3488.4,-280.75C3478.96,-276.86 3468.53,-272.8 3458.77,-269.5 3403.06,-250.68 3337.59,-233.84 3293.87,-223.32"/>
+<polygon fill="#000000" stroke="#000000" points="3294.71,-219.92 3284.17,-221.01 3293.08,-226.73 3294.71,-219.92"/>
+</g>
+<!-- practice01__test_api__test_record_delete&#45;&gt;practice01__test_api__test_case -->
+<g id="edge102" class="edge">
+<title>practice01__test_api__test_record_delete&#45;&gt;practice01__test_api__test_case</title>
+<path fill="none" stroke="#000000" d="M2772.16,-280.38C2785.73,-276.44 2800.77,-272.43 2814.77,-269.5 2948.41,-241.52 3108.4,-224.34 3190.41,-216.69"/>
+<polygon fill="#000000" stroke="#000000" points="3190.55,-220.19 3200.19,-215.79 3189.91,-213.22 3190.55,-220.19"/>
+</g>
+<!-- practice01__test_api__test_record_list&#45;&gt;practice01__test_api__test_case -->
+<g id="edge103" class="edge">
+<title>practice01__test_api__test_record_list&#45;&gt;practice01__test_api__test_case</title>
+<path fill="none" stroke="#000000" d="M2931.89,-280.56C2943.69,-276.71 2956.68,-272.71 2968.77,-269.5 3046.44,-248.87 3138.01,-231.05 3193.7,-220.92"/>
+<polygon fill="#000000" stroke="#000000" points="3193.98,-224.43 3203.2,-219.21 3192.73,-217.54 3193.98,-224.43"/>
+</g>
+<!-- practice01__test_api__test_register&#45;&gt;practice01__test_api__test_case -->
+<g id="edge104" class="edge">
+<title>practice01__test_api__test_register&#45;&gt;practice01__test_api__test_case</title>
+<path fill="none" stroke="#000000" d="M3068.14,-281.06C3105.07,-266.62 3163.77,-243.67 3203.26,-228.23"/>
+<polygon fill="#000000" stroke="#000000" points="3204.4,-231.54 3212.44,-224.64 3201.85,-225.02 3204.4,-231.54"/>
+</g>
+<!-- practice01__test_api__test_register_duplicate&#45;&gt;practice01__test_api__test_case -->
+<g id="edge105" class="edge">
+<title>practice01__test_api__test_register_duplicate&#45;&gt;practice01__test_api__test_case</title>
+<path fill="none" stroke="#000000" d="M2339.82,-280.04C2356.03,-276.03 2374.04,-272.07 2390.77,-269.5 2689.39,-223.55 3052.37,-214.32 3189.11,-212.47"/>
+<polygon fill="#000000" stroke="#000000" points="3189.01,-215.97 3198.96,-212.34 3188.92,-208.97 3189.01,-215.97"/>
+</g>
+<!-- practice01__test_api__test_register_empty_params&#45;&gt;practice01__test_api__test_case -->
+<g id="edge106" class="edge">
+<title>practice01__test_api__test_register_empty_params&#45;&gt;practice01__test_api__test_case</title>
+<path fill="none" stroke="#000000" d="M2580.75,-280.19C2600,-276.31 2621.17,-272.38 2640.77,-269.5 2841.91,-239.89 3083.1,-222.24 3189.6,-215.35"/>
+<polygon fill="#000000" stroke="#000000" points="3189.74,-218.85 3199.49,-214.72 3189.29,-211.87 3189.74,-218.85"/>
+</g>
+<!-- practice01__test_api__test_case__decorator__wrapper -->
+<g id="node51" class="node">
+<title>practice01__test_api__test_case__decorator__wrapper</title>
+<g id="a_node51"><a xlink:title="practice01.test_api.test_case.decorator.wrapper&#10;D:&#10;anzeguitrae111practice01test_api.py:21&#10;function in practice01.test_api.test_case.decorator">
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="3244.77" cy="-42" rx="41.12" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="3244.77" y="-36.95" font-family="Times New Roman,serif" font-size="14.00" fill="#000000">wrapper</text>
+</a>
+</g>
+</g>
+<!-- practice01__test_api__test_case__decorator&#45;&gt;practice01__test_api__test_case__decorator__wrapper -->
+<g id="edge95" class="edge">
+<title>practice01__test_api__test_case__decorator&#45;&gt;practice01__test_api__test_case__decorator__wrapper</title>
+<path fill="none" stroke="#838b8b" stroke-dasharray="5,2" d="M3239.18,-108.41C3238.01,-97.68 3237.72,-83.58 3238.33,-71.22"/>
+<polygon fill="#838b8b" stroke="#838b8b" points="3241.79,-71.82 3239.06,-61.58 3234.81,-71.29 3241.79,-71.82"/>
+</g>
+<!-- practice01__test_api__test_case__decorator&#45;&gt;practice01__test_api__test_case__decorator__wrapper -->
+<g id="edge96" class="edge">
+<title>practice01__test_api__test_case__decorator&#45;&gt;practice01__test_api__test_case__decorator__wrapper</title>
+<path fill="none" stroke="#000000" d="M3250.36,-108.41C3251.53,-97.68 3251.81,-83.58 3251.21,-71.22"/>
+<polygon fill="#000000" stroke="#000000" points="3254.73,-71.29 3250.47,-61.58 3247.75,-71.82 3254.73,-71.29"/>
+</g>
+</g>
+</svg>
+`,
+                    ready: function() {
+                        var gv = this
+                        gv.nodes().click(function () {
+                            var $set = $()
+                            $set.push(this)
+                            $set = $set.add(gv.linkedFrom(this, true))
+                            $set = $set.add(gv.linkedTo(this, true))
+                            gv.highlight($set, true)
+                            gv.bringToFront($set)
+                        })
+                        $(document).keydown(function (evt) {
+                            if (evt.keyCode == 27) {
+                                gv.highlight()
+                            }
+                        })
+                    }
+                });
+            });
+		</script>
+	</body>
+</html>
